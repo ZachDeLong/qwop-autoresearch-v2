@@ -44,7 +44,10 @@ class _Agent(nn.Module):
 _device = torch.device("cpu")
 _agent = _Agent().to(_device)
 
-_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ppo_model.pt")
+# Use speed-optimized model (132.5s) over original (158.75s)
+_speed_model = os.path.join(os.path.dirname(os.path.abspath(__file__)), "speed_model.pt")
+_orig_model = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ppo_model.pt")
+_model_path = _speed_model if os.path.exists(_speed_model) else _orig_model
 if os.path.exists(_model_path):
     _agent.load_state_dict(torch.load(_model_path, map_location=_device, weights_only=True))
     _agent.eval()
