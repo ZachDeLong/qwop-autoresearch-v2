@@ -12,7 +12,7 @@
     "best_finish_time": 130.15,
     "agent_path": "claude/agent.py",
     "agent_type": "policy",
-    "wall_clock_seconds": 61.23
+    "wall_clock_seconds": 67.14
   },
   "episodes": [
     {
