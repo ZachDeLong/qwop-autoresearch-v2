@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+results/
+claude/
+*.pt
+*.pth
+episode_log.csv
+.env

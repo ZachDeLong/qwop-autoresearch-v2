@@ -21,18 +21,18 @@ class Agent(nn.Module):
     def __init__(self):
         super().__init__()
         self.critic = nn.Sequential(
-            nn.Linear(OBS_DIM, 128),
+            nn.Linear(OBS_DIM, 64),
             nn.Tanh(),
-            nn.Linear(128, 128),
+            nn.Linear(64, 64),
             nn.Tanh(),
-            nn.Linear(128, 1),
+            nn.Linear(64, 1),
         )
         self.actor = nn.Sequential(
-            nn.Linear(OBS_DIM, 128),
+            nn.Linear(OBS_DIM, 64),
             nn.Tanh(),
-            nn.Linear(128, 128),
+            nn.Linear(64, 64),
             nn.Tanh(),
-            nn.Linear(128, ACT_DIM),
+            nn.Linear(64, ACT_DIM),
         )
         for layer in [*self.critic, *self.actor]:
             if isinstance(layer, nn.Linear):
