@@ -13,6 +13,7 @@ Usage:
     print(f"Steps used: {get_step_count()} / {STEP_BUDGET}")
 """
 
+import atexit
 import json
 import os
 
@@ -25,32 +26,66 @@ FRAMES_PER_STEP = 4
 MAX_EPISODE_STEPS = 5000
 SANITY_CHECK_BUDGET = 10_000  # free steps for verifying code works
 
-# Chrome paths
-CHROME_PATH = "C:/Program Files/Google/Chrome/Application/chrome.exe"
-CHROMEDRIVER_PATH = os.path.expanduser(
-    "~/.cache/selenium/chromedriver/win64/145.0.7632.117/chromedriver.exe"
+# Chrome/driver paths — override via env vars for non-Windows systems
+CHROME_PATH = os.environ.get(
+    "QWOP_CHROME_PATH",
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+)
+CHROMEDRIVER_PATH = os.environ.get(
+    "QWOP_CHROMEDRIVER_PATH",
+    os.path.expanduser("~/.cache/selenium/chromedriver/win64/145.0.7632.117/chromedriver.exe"),
 )
 
 # Persistent step count file
 STEP_COUNT_FILE = "results/step_count.json"
 
+# Checkpoint to disk every N steps (avoids per-step file I/O)
+_CHECKPOINT_INTERVAL = 1000
 
-def _load_step_count() -> dict:
-    if os.path.exists(STEP_COUNT_FILE):
-        with open(STEP_COUNT_FILE) as f:
-            return json.load(f)
-    return {"total_steps": 0, "sanity_steps": 0, "budget_active": False}
+# In-memory state (loaded once, checkpointed periodically)
+_state: dict | None = None
 
 
-def _save_step_count(data: dict) -> None:
+def _ensure_loaded() -> dict:
+    """Load state from disk on first access, then keep in memory."""
+    global _state
+    if _state is None:
+        if os.path.exists(STEP_COUNT_FILE):
+            with open(STEP_COUNT_FILE) as f:
+                _state = json.load(f)
+        else:
+            _state = {"total_steps": 0, "sanity_steps": 0, "budget_active": False}
+        _state.setdefault("_since_checkpoint", 0)
+    return _state
+
+
+def _save_to_disk() -> None:
+    """Write current state to disk."""
+    if _state is None:
+        return
     os.makedirs(os.path.dirname(os.path.abspath(STEP_COUNT_FILE)), exist_ok=True)
+    # Write a clean copy without internal bookkeeping
+    disk_data = {k: v for k, v in _state.items() if not k.startswith("_")}
     with open(STEP_COUNT_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+        json.dump(disk_data, f, indent=2)
+
+
+def _maybe_checkpoint() -> None:
+    """Save to disk if enough steps have passed since last checkpoint."""
+    state = _ensure_loaded()
+    state["_since_checkpoint"] += 1
+    if state["_since_checkpoint"] >= _CHECKPOINT_INTERVAL:
+        state["_since_checkpoint"] = 0
+        _save_to_disk()
+
+
+# Always flush to disk on exit so no steps are lost
+atexit.register(_save_to_disk)
 
 
 def get_step_count() -> int:
     """Return total budget steps consumed (excludes sanity check steps)."""
-    return _load_step_count()["total_steps"]
+    return _ensure_loaded()["total_steps"]
 
 
 def get_remaining_steps() -> int:
@@ -60,13 +95,13 @@ def get_remaining_steps() -> int:
 
 def activate_budget():
     """Mark the budget as active (Phase 1 starts). Called before real training."""
-    data = _load_step_count()
-    data["budget_active"] = True
-    _save_step_count(data)
+    state = _ensure_loaded()
+    state["budget_active"] = True
+    _save_to_disk()
 
 
 def is_budget_active() -> bool:
-    return _load_step_count()["budget_active"]
+    return _ensure_loaded()["budget_active"]
 
 
 class StepCounter(gym.Wrapper):
@@ -76,24 +111,26 @@ class StepCounter(gym.Wrapper):
         super().__init__(env)
 
     def step(self, action):
-        data = _load_step_count()
+        state = _ensure_loaded()
 
-        if data["budget_active"]:
-            if data["total_steps"] >= STEP_BUDGET:
+        if state["budget_active"]:
+            if state["total_steps"] >= STEP_BUDGET:
+                _save_to_disk()
                 raise RuntimeError(
-                    f"Step budget exhausted: {data['total_steps']}/{STEP_BUDGET} steps used. "
+                    f"Step budget exhausted: {state['total_steps']}/{STEP_BUDGET} steps used. "
                     f"Go to evaluation with what you have."
                 )
-            data["total_steps"] += 1
+            state["total_steps"] += 1
         else:
-            if data["sanity_steps"] >= SANITY_CHECK_BUDGET:
+            if state["sanity_steps"] >= SANITY_CHECK_BUDGET:
+                _save_to_disk()
                 raise RuntimeError(
-                    f"Sanity check budget exhausted: {data['sanity_steps']}/{SANITY_CHECK_BUDGET}. "
+                    f"Sanity check budget exhausted: {state['sanity_steps']}/{SANITY_CHECK_BUDGET}. "
                     f"Call activate_budget() to start using the main budget."
                 )
-            data["sanity_steps"] += 1
+            state["sanity_steps"] += 1
 
-        _save_step_count(data)
+        _maybe_checkpoint()
         return self.env.step(action)
 
 
@@ -119,7 +156,7 @@ def make_counted_env(**kwargs):
 
 def print_budget_status():
     """Print current budget usage."""
-    data = _load_step_count()
+    data = _ensure_loaded()
     print(f"\n{'='*40}")
     print(f"STEP BUDGET STATUS")
     print(f"{'='*40}")

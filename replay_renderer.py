@@ -21,9 +21,13 @@ import qwop_gym  # noqa: F401
 FRAMES_PER_STEP = 4
 DEFAULT_RENDER_FPS = 10  # steps per second for video playback
 
-CHROME_PATH = "C:/Program Files/Google/Chrome/Application/chrome.exe"
-CHROMEDRIVER_PATH = os.path.expanduser(
-    "~/.cache/selenium/chromedriver/win64/145.0.7632.117/chromedriver.exe"
+CHROME_PATH = os.environ.get(
+    "QWOP_CHROME_PATH",
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+)
+CHROMEDRIVER_PATH = os.environ.get(
+    "QWOP_CHROMEDRIVER_PATH",
+    os.path.expanduser("~/.cache/selenium/chromedriver/win64/145.0.7632.117/chromedriver.exe"),
 )
 
 

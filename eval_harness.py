@@ -30,10 +30,14 @@ FRAMES_PER_STEP = 4
 MAX_EPISODE_STEPS = 5000
 GAME_TIME_MULTIPLIER = 10  # qwop-gym reports scoreTime/10
 
-# Chrome paths — must match env_setup.py
-CHROME_PATH = "C:/Program Files/Google/Chrome/Application/chrome.exe"
-CHROMEDRIVER_PATH = os.path.expanduser(
-    "~/.cache/selenium/chromedriver/win64/145.0.7632.117/chromedriver.exe"
+# Chrome/driver paths — override via env vars for non-Windows systems
+CHROME_PATH = os.environ.get(
+    "QWOP_CHROME_PATH",
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+)
+CHROMEDRIVER_PATH = os.environ.get(
+    "QWOP_CHROMEDRIVER_PATH",
+    os.path.expanduser("~/.cache/selenium/chromedriver/win64/145.0.7632.117/chromedriver.exe"),
 )
 
 
