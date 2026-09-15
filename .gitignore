@@ -1,0 +1,15 @@
+.venv/
+.runtime/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+runs/
+qwop-autoresearch-v2/
+qwop-gym-review/
+qwop-v2-review/
+.env
+*.pt
+*.zip
+

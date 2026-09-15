@@ -1,0 +1,279 @@
+{
+  "design": "Single-training-seed pilot; time penalty 10 vs 30; all other configured settings matched",
+  "summaries": {
+    "control": {
+      "episodes": 6,
+      "finishes": 6,
+      "success_rate": 1.0,
+      "mean_finish_score_time": 154.7544813156128,
+      "median_finish_score_time": 154.75499629974365,
+      "best_finish_score_time": 154.07176971435547,
+      "mean_distance": 100.79943084716797,
+      "total_steps": 6966,
+      "unique_initial_observations": 1,
+      "unique_action_sequences": 2,
+      "unique_trajectories": 6,
+      "interpretation": "Descriptive validation cases, not independent training replications"
+    },
+    "treatment": {
+      "episodes": 6,
+      "finishes": 6,
+      "success_rate": 1.0,
+      "mean_finish_score_time": 161.50379498799643,
+      "median_finish_score_time": 161.50434494018555,
+      "best_finish_score_time": 160.60440063476562,
+      "mean_distance": 103.02053451538086,
+      "total_steps": 7269,
+      "unique_initial_observations": 1,
+      "unique_action_sequences": 2,
+      "unique_trajectories": 6,
+      "interpretation": "Descriptive validation cases, not independent training replications"
+    }
+  },
+  "paired_cases": [
+    {
+      "case": "seed-101-soft-0",
+      "control": {
+        "is_success": true,
+        "score_time": 154.0739631652832,
+        "distance": 100.90834045410156
+      },
+      "treatment": {
+        "is_success": true,
+        "score_time": 160.60659408569336,
+        "distance": 101.74227905273438
+      }
+    },
+    {
+      "case": "seed-101-soft-1",
+      "control": {
+        "is_success": true,
+        "score_time": 155.4360294342041,
+        "distance": 100.69052124023438
+      },
+      "treatment": {
+        "is_success": true,
+        "score_time": 162.40249633789062,
+        "distance": 104.29878997802734
+      }
+    },
+    {
+      "case": "seed-202-soft-0",
+      "control": {
+        "is_success": true,
+        "score_time": 154.0718650817871,
+        "distance": 100.90834045410156
+      },
+      "treatment": {
+        "is_success": true,
+        "score_time": 160.6045913696289,
+        "distance": 101.74227905273438
+      }
+    },
+    {
+      "case": "seed-202-soft-1",
+      "control": {
+        "is_success": true,
+        "score_time": 155.436429977417,
+        "distance": 100.69052124023438
+      },
+      "treatment": {
+        "is_success": true,
+        "score_time": 162.40259170532227,
+        "distance": 104.29878997802734
+      }
+    },
+    {
+      "case": "seed-303-soft-0",
+      "control": {
+        "is_success": true,
+        "score_time": 154.07176971435547,
+        "distance": 100.90834045410156
+      },
+      "treatment": {
+        "is_success": true,
+        "score_time": 160.60440063476562,
+        "distance": 101.74227905273438
+      }
+    },
+    {
+      "case": "seed-303-soft-1",
+      "control": {
+        "is_success": true,
+        "score_time": 155.43683052062988,
+        "distance": 100.69052124023438
+      },
+      "treatment": {
+        "is_success": true,
+        "score_time": 162.40209579467773,
+        "distance": 104.29878997802734
+      }
+    }
+  ],
+  "finish_time_reduction_percent_if_both_finish_all": -4.361304186480264,
+  "budget": {
+    "cap": 350000,
+    "charged_steps": 278740,
+    "confirmed_steps": 278740,
+    "remaining_steps": 71260,
+    "leases": [
+      {
+        "label": "train:control",
+        "charged": 131072,
+        "used": 131072,
+        "closed": 1
+      },
+      {
+        "label": "control",
+        "charged": 6966,
+        "used": 6966,
+        "closed": 1
+      },
+      {
+        "label": "train:treatment",
+        "charged": 131072,
+        "used": 131072,
+        "closed": 1
+      },
+      {
+        "label": "replay:Control: original time penalty (10)",
+        "charged": 1156,
+        "used": 1156,
+        "closed": 1
+      },
+      {
+        "label": "treatment",
+        "charged": 7269,
+        "used": 7269,
+        "closed": 1
+      },
+      {
+        "label": "replay:Treatment: higher time penalty (30)",
+        "charged": 1205,
+        "used": 1205,
+        "closed": 1
+      }
+    ]
+  },
+  "limitations": [
+    "One training seed, no uncertainty estimate for training variability",
+    "Seed labels do not imply distinct initial physical states",
+    "Development validation only; no held-out final test",
+    "No claim of AI research superiority; no search-control campaign"
+  ],
+  "diagnostic_budget": {
+    "cap": 50000,
+    "charged_steps": 15801,
+    "confirmed_steps": 15801,
+    "remaining_steps": 34199,
+    "leases": [
+      {
+        "label": "historical-original",
+        "charged": 7548,
+        "used": 7548,
+        "closed": 1
+      },
+      {
+        "label": "replay:Historical PPO - original reward",
+        "charged": 0,
+        "used": 0,
+        "closed": 1
+      },
+      {
+        "label": "replay:Historical PPO - original reward",
+        "charged": 1255,
+        "used": 1255,
+        "closed": 1
+      },
+      {
+        "label": "historical-speed",
+        "charged": 5997,
+        "used": 5997,
+        "closed": 1
+      },
+      {
+        "label": "replay:Historical PPO - speed tuned",
+        "charged": 1001,
+        "used": 1001,
+        "closed": 1
+      }
+    ]
+  },
+  "total_session_steps": 294541,
+  "replay_verification": {
+    "control": {
+      "verified": true,
+      "verified_transitions": 1156,
+      "source_replay_sha256": "d75904c9d6a73c8a3f099e8a56707bcc8a4cdda78debf7cd4c9a7be59c335b5e",
+      "video_sha256": "75de7fea1eb955fe252073f3585bf923d8f73474bb632f549a6508c92ad6d538",
+      "fps": 30,
+      "frames": 4651,
+      "duration_seconds": 155.03333333333333,
+      "final_hold_seconds": 1,
+      "initial_score_time": 0.04063333384692669,
+      "reset_raw_time_offset": -8.00001434981823e-05,
+      "elapsed_raw_time_tolerance": 5e-06,
+      "final_score_time": 154.07316207885742,
+      "case": {
+        "id": "seed-101-soft-0",
+        "seed": 101,
+        "soft_resets": 0
+      },
+      "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+    },
+    "treatment": {
+      "verified": true,
+      "verified_transitions": 1205,
+      "source_replay_sha256": "faac30ce95df188d526d5418cb1b6bc3cbebfcb1242865c440e22ed03d511cbf",
+      "video_sha256": "c494ea08da148bd4e116ccbeea01c670521c74c74141c9d98cafae6a33037b1a",
+      "fps": 30,
+      "frames": 4847,
+      "duration_seconds": 161.56666666666666,
+      "final_hold_seconds": 1,
+      "initial_score_time": 0.0399333331733942,
+      "reset_raw_time_offset": 5.9999991208314896e-05,
+      "elapsed_raw_time_tolerance": 5e-06,
+      "final_score_time": 160.60720443725586,
+      "case": {
+        "id": "seed-101-soft-0",
+        "seed": 101,
+        "soft_resets": 0
+      },
+      "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+    }
+  },
+  "historical_remeasured": {
+    "original": {
+      "episodes": 6,
+      "finishes": 6,
+      "success_rate": 1.0,
+      "mean_finish_score_time": 167.73776372273764,
+      "median_finish_score_time": 167.7382755279541,
+      "best_finish_score_time": 167.30499267578125,
+      "mean_distance": 104.2568473815918,
+      "total_steps": 7548,
+      "unique_initial_observations": 1,
+      "unique_action_sequences": 2,
+      "unique_trajectories": 5,
+      "interpretation": "Descriptive validation cases, not independent training replications"
+    },
+    "speed": {
+      "episodes": 6,
+      "finishes": 6,
+      "success_rate": 1.0,
+      "mean_finish_score_time": 133.25433413187662,
+      "median_finish_score_time": 133.25415134429932,
+      "best_finish_score_time": 133.03583145141602,
+      "mean_distance": 100.59324645996094,
+      "total_steps": 5997,
+      "unique_initial_observations": 1,
+      "unique_action_sequences": 2,
+      "unique_trajectories": 6,
+      "interpretation": "Descriptive validation cases, not independent training replications"
+    }
+  },
+  "physical_trace_counts": {
+    "control": 2,
+    "treatment": 2
+  }
+}

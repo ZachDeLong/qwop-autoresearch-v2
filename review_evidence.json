@@ -1,0 +1,173 @@
+{
+  "original_ppo": {
+    "commit": "0716e10cdbb53fb914d5012b0271202564d488ca",
+    "stored_summary": {
+      "num_episodes": 100,
+      "mean_distance": 102.67,
+      "median_distance": 102.67,
+      "max_distance": 103.19,
+      "min_distance": 102.15,
+      "std_distance": 0.52,
+      "success_rate": 1.0,
+      "races_finished": 100,
+      "mean_finish_time": 158.75,
+      "best_finish_time": 156.78,
+      "agent_path": "claude/agent.py",
+      "agent_type": "policy",
+      "wall_clock_seconds": 77.13
+    },
+    "recomputed_mean_finish_time": 158.75,
+    "successes": 100,
+    "episodes": 100,
+    "unique_action_sequences": 2,
+    "sequence_repetition_counts": [
+      50,
+      50
+    ],
+    "all_action_lengths_match": true,
+    "all_actions_valid": true
+  },
+  "speed_round_1": {
+    "commit": "7391909ca3975b39be3a64624d980d859e82592e",
+    "stored_summary": {
+      "num_episodes": 100,
+      "mean_distance": 101.19,
+      "median_distance": 101.19,
+      "max_distance": 101.6,
+      "min_distance": 100.78,
+      "std_distance": 0.41,
+      "success_rate": 1.0,
+      "races_finished": 100,
+      "mean_finish_time": 134.35,
+      "best_finish_time": 133.88,
+      "agent_path": "claude/agent.py",
+      "agent_type": "policy",
+      "wall_clock_seconds": 63.44
+    },
+    "recomputed_mean_finish_time": 134.35,
+    "successes": 100,
+    "episodes": 100,
+    "unique_action_sequences": 2,
+    "sequence_repetition_counts": [
+      50,
+      50
+    ],
+    "all_action_lengths_match": true,
+    "all_actions_valid": true
+  },
+  "speed_round_2": {
+    "commit": "dd2219c88e9cc4713aa2b762b9352072b4026258",
+    "stored_summary": {
+      "num_episodes": 100,
+      "mean_distance": 100.71,
+      "median_distance": 100.71,
+      "max_distance": 100.78,
+      "min_distance": 100.65,
+      "std_distance": 0.07,
+      "success_rate": 1.0,
+      "races_finished": 100,
+      "mean_finish_time": 130.4,
+      "best_finish_time": 130.15,
+      "agent_path": "claude/agent.py",
+      "agent_type": "policy",
+      "wall_clock_seconds": 61.23
+    },
+    "recomputed_mean_finish_time": 130.4,
+    "successes": 100,
+    "episodes": 100,
+    "unique_action_sequences": 2,
+    "sequence_repetition_counts": [
+      50,
+      50
+    ],
+    "all_action_lengths_match": true,
+    "all_actions_valid": true
+  },
+  "v2_final": {
+    "commit": "d5201f8c4f989079b3195cfba96626310118c820",
+    "stored_summary": {
+      "num_episodes": 100,
+      "mean_distance": 100.71,
+      "median_distance": 100.71,
+      "max_distance": 100.78,
+      "min_distance": 100.65,
+      "std_distance": 0.07,
+      "success_rate": 1.0,
+      "races_finished": 100,
+      "mean_finish_time": 130.4,
+      "best_finish_time": 130.15,
+      "agent_path": "claude/agent.py",
+      "agent_type": "policy",
+      "wall_clock_seconds": 67.14
+    },
+    "recomputed_mean_finish_time": 130.4,
+    "successes": 100,
+    "episodes": 100,
+    "unique_action_sequences": 2,
+    "sequence_repetition_counts": [
+      50,
+      50
+    ],
+    "all_action_lengths_match": true,
+    "all_actions_valid": true
+  },
+  "current_baseline": {
+    "commit": "2e6783f9f9a93eed1fd28a00a4a47a9cd760bbec",
+    "stored_summary": {
+      "num_episodes": 100,
+      "mean_distance": 102.67,
+      "median_distance": 102.67,
+      "max_distance": 103.19,
+      "min_distance": 102.15,
+      "std_distance": 0.52,
+      "success_rate": 1.0,
+      "races_finished": 100,
+      "mean_finish_time": 158.75,
+      "best_finish_time": 156.78,
+      "agent_path": "claude/agent_policy.py",
+      "agent_type": "policy",
+      "wall_clock_seconds": 76.81
+    },
+    "recomputed_mean_finish_time": 158.75,
+    "successes": 100,
+    "episodes": 100,
+    "unique_action_sequences": 2,
+    "sequence_repetition_counts": [
+      50,
+      50
+    ],
+    "all_action_lengths_match": true,
+    "all_actions_valid": true
+  },
+  "baseline_provenance": {
+    "episodes_identical_to_original_claude": true,
+    "different_summary_fields": [
+      "agent_path",
+      "wall_clock_seconds"
+    ]
+  },
+  "finish_time_reduction_percent": 17.858267716535426,
+  "syntax_checked_files": [
+    "qwop-autoresearch-v2\\eval_harness.py",
+    "qwop-autoresearch-v2\\replay_renderer.py",
+    "qwop-autoresearch-v2\\step_counter.py",
+    "qwop-autoresearch-v2\\baseline\\agent.py",
+    "qwop-v2-review\\eval_harness.py",
+    "qwop-v2-review\\replay_renderer.py",
+    "qwop-v2-review\\step_counter.py",
+    "qwop-v2-review\\baseline\\agent.py",
+    "qwop-v2-review\\claude\\agent.py",
+    "qwop-v2-review\\claude\\extract_sequences.py",
+    "qwop-v2-review\\claude\\optimize_v2.py",
+    "qwop-v2-review\\claude\\refine_sequence.py",
+    "qwop-v2-review\\claude\\train_ppo.py",
+    "qwop-v2-review\\claude\\train_speed.py",
+    "qwop-v2-review\\claude\\train_speed2.py"
+  ],
+  "validation_scope": "Saved JSON, Python syntax, and isolated counter behavior with stub environments; no game or training executed.",
+  "counter_isolation_check": {
+    "actual_steps_across_two_independent_counter_states": 2000,
+    "persisted_steps": 1000,
+    "method": "Two isolated module states sharing the counter file, simulating separate process caches. Stub environments, no game executed."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "repository": "https://github.com/ZachDeLong/qwop-autoresearch-v2",
+  "commit": "d5201f8c4f989079b3195cfba96626310118c820",
+  "models": {
+    "original.pt": {
+      "source_path": "claude/ppo_model.pt",
+      "sha256": "7db68dae7f5adee9e8540ff384606ec5845e9b3076aebb5fa94b1f40522b4c00"
+    },
+    "speed.pt": {
+      "source_path": "claude/speed_model.pt",
+      "sha256": "419031d7eff5bcfc0fc234c9820aa33d082f2cc22f481369f13a632da11f5baf"
+    }
+  }
+}
