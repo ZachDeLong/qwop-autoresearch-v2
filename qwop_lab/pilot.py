@@ -5,7 +5,7 @@ from pathlib import Path
 from .artifacts import read_json, write_json
 from .budget import Ledger
 from .environment import VALIDATION_CASES
-from .evaluation import evaluate
+from .evaluation import SCORING, evaluate, finish_seconds, summarize
 from .replay import replay, side_by_side
 from .training import train
 
@@ -32,7 +32,7 @@ def finish_pilot(folder):
             != arms["treatment"]["provenance"]["source_hashes"][key]
         ):
             raise ValueError(f"Training implementation changed between arms: {module}")
-    summaries = {name: read_json(folder / f"{name}-eval" / "summary.json") for name in arms}
+    all_episodes = {name: [] for name in arms}
     for name, arm in arms.items():
         evaluation = read_json(folder / f"{name}-eval" / "manifest.json")
         if evaluation["status"] != "complete":
@@ -44,28 +44,35 @@ def finish_pilot(folder):
         episodes = {name: read_json(folder / f"{name}-eval" / f"{case.id}.json") for name in arms}
         if episodes["control"]["contract"] != episodes["treatment"]["contract"]:
             raise ValueError("Evaluation contracts differ")
+        for name, episode in episodes.items():
+            all_episodes[name].append(episode)
         pairs.append(
             {
                 "case": case.id,
                 **{
-                    name: {k: episode[k] for k in ("is_success", "score_time", "distance")}
+                    name: {
+                        **{k: episode[k] for k in ("is_success", "score_time", "distance")},
+                        "finish_100m_game_seconds": finish_seconds(episode),
+                    }
                     for name, episode in episodes.items()
                 },
             }
         )
-    both_finish_all = all(s["finishes"] == s["episodes"] for s in summaries.values())
+    summaries = {name: summarize(episodes) for name, episodes in all_episodes.items()}
+    both_finish_all = all(s["valid_100m_finishes"] == s["episodes"] for s in summaries.values())
     improvement = None
     if both_finish_all:
         improvement = 100 * (
             1
-            - summaries["treatment"]["mean_finish_score_time"]
-            / summaries["control"]["mean_finish_score_time"]
+            - summaries["treatment"]["mean_100m_game_seconds"]
+            / summaries["control"]["mean_100m_game_seconds"]
         )
     report = {
+        "scoring": SCORING,
         "design": "Single-training-seed pilot; time penalty 10 vs 30; all other configured settings matched",
         "summaries": summaries,
         "paired_cases": pairs,
-        "finish_time_reduction_percent_if_both_finish_all": improvement,
+        "mean_100m_time_reduction_percent_if_both_finish_all": improvement,
         "budget": Ledger(folder / "budget.sqlite").status(),
         "limitations": [
             "One training seed, no uncertainty estimate for training variability",

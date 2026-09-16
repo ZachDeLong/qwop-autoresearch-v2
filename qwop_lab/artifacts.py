@@ -7,6 +7,7 @@ import os
 import platform
 import subprocess
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,7 +37,14 @@ def write_json(path, data):
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, allow_nan=False)
             f.write("\n")
-        os.replace(tmp, path)
+        for attempt in range(10):
+            try:
+                os.replace(tmp, path)
+                break
+            except PermissionError:
+                if attempt == 9:
+                    raise
+                time.sleep(min(0.02 * 2**attempt, 0.2))
     finally:
         if os.path.exists(tmp):
             os.unlink(tmp)
@@ -55,7 +63,7 @@ def provenance():
 
     sources = {
         str(p.relative_to(ROOT)).replace("\\", "/"): sha256(p)
-        for p in sorted((ROOT / "qwop_lab").glob("*.py"))
+        for p in sorted((ROOT / "qwop_lab").rglob("*.py"))
     }
     return {
         "created_utc": datetime.now(timezone.utc).isoformat(),

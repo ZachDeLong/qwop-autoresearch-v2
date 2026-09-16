@@ -1,0 +1,29 @@
+{
+  "id": "transport-recovery-001",
+  "created_utc": "2026-09-15T21:00:27.424028+00:00",
+  "protocol_sha256": "16e568620254be9dccb750fad24fc8e996a91a4118884a01720e0b10a01f6808",
+  "failed_result_sha256": "a52e9cda08da3fee50a6f5aa0ea7bdb240bff28c516afdc0f94bc9000e111a0a",
+  "failed_training_manifest_sha256": "370757d4731ada7cddf2eed02fbc0ab00fb8d4a73f5f8f3235d2c1349ace295c",
+  "implementation_sha256": "d01682e0816db3510f41089c561407067c3b45fad17eb64833dfcaceec95ce8a",
+  "diagnosis": "Browser response timed out; exact cause not established. No action was resent.",
+  "failed_attempt_charged_steps": 46253,
+  "retry_slot": "proposal-1-retry",
+  "retry_steps": 477184,
+  "unused_rounding_steps": 851,
+  "retry_architecture": {
+    "layers": [
+      64,
+      64
+    ],
+    "activation": "Tanh",
+    "extractor": "qwop_lab.candidates.body_grouped_v1:BodyGroupedExtractor"
+  },
+  "changes": [
+    "Allow one fresh retry of the identical first architecture within that slot's unused budget",
+    "Evaluate the retry only at its final trained checkpoint because its shortened allocation no longer divides the original checkpoint interval",
+    "Second proposal must cite both the original failed result and the completed retry",
+    "The original training/evaluation ledgers and total caps stay in force; no additional training steps are granted",
+    "Compare the completed retry as trial one, while reporting its shorter effective training and failed-attempt cost",
+    "If another transport error occurs, preserve it and leave this campaign incomplete"
+  ]
+}

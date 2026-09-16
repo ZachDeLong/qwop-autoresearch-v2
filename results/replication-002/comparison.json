@@ -1,0 +1,398 @@
+{
+  "status": "complete_with_recorded_continuation",
+  "created_utc": "2026-09-15T23:56:37.910473+00:00",
+  "protocol": {
+    "id": "architecture-replication-v1",
+    "created_utc": "2026-09-15T23:02:49.614595+00:00",
+    "seeds": [
+      17,
+      29,
+      61
+    ],
+    "designs": {
+      "baseline": {
+        "layers": [
+          128,
+          128
+        ],
+        "activation": "Tanh"
+      },
+      "kinematic": {
+        "layers": [
+          64,
+          64
+        ],
+        "activation": "Tanh",
+        "extractor": "qwop_lab.candidates.kinematic_v2:KinematicExtractor"
+      }
+    },
+    "architecture_identities": {
+      "baseline": {
+        "layers": [
+          128,
+          128
+        ],
+        "activation": "Tanh",
+        "extractor": null
+      },
+      "kinematic": {
+        "layers": [
+          64,
+          64
+        ],
+        "activation": "Tanh",
+        "extractor": "qwop_lab.candidates.kinematic_v2:KinematicExtractor",
+        "source_sha256": "8c9f8b6c17aec5a5866ea9483e45d4fb13e4dba40e623652ce56fbab38167bd2",
+        "source_file": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\qwop_lab\\candidates\\kinematic_v2.py"
+      }
+    },
+    "training_steps_per_run": 1048576,
+    "checkpoint_interval": 262144,
+    "evaluation_and_replay_cap_per_run": 50000,
+    "training_wall_seconds_per_run": 7200,
+    "max_parameters": 250000,
+    "max_workers": 3,
+    "ppo_config": {
+      "n_steps": 2048,
+      "batch_size": 128,
+      "n_epochs": 6,
+      "learning_rate": 0.0003,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.01,
+      "vf_coef": 0.5,
+      "max_grad_norm": 0.5,
+      "device": "cpu",
+      "verbose": 0
+    },
+    "training_reward": {
+      "time_cost_mult": 10,
+      "success_reward": 50
+    },
+    "initialization": "Fresh seeded weights for every run; no old weights or continuation",
+    "evaluation_cases": [
+      {
+        "seed": 101,
+        "soft_resets": 0
+      },
+      {
+        "seed": 101,
+        "soft_resets": 1
+      }
+    ],
+    "replay_case": {
+      "seed": 101,
+      "soft_resets": 0
+    },
+    "contract": {
+      "id": "qwop-lab-v1",
+      "frames_per_step": 4,
+      "max_episode_steps": 5000,
+      "observation": "qwop-gym-1.0.1-normalized-60-float32",
+      "actions": "qwop-gym-1.0.1-full-16-enumerated-key-combinations",
+      "completion": "qwop-gym native is_success at terminal; includes 105m fallback",
+      "score_time": "info.time * 10; raw info.time retained separately",
+      "first_100m": "first observed distance >=100; sampled every four physics frames",
+      "reset": "hard reset(seed), followed by case.soft_resets soft resets",
+      "inference": "deterministic argmax",
+      "browser_flags": [
+        "--headless=new",
+        "--allow-file-access-from-files",
+        "--disable-extensions",
+        "--disable-notifications",
+        "--disable-popup-blocking",
+        "--window-size=800,650",
+        "--disable-background-timer-throttling",
+        "--disable-renderer-backgrounding",
+        "--enable-unsafe-swiftshader",
+        "--incognito"
+      ],
+      "runtime_id": "a21cdb8e61e3b5333c21f8b52c4775e5a61570a0cb46ed1313646cb58d1b6aba",
+      "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+    },
+    "scoring": {
+      "id": "finish-line-v2",
+      "primary": "best_100m_game_seconds",
+      "direction": "minimize",
+      "valid_finish": "Recorded 100m crossing and native terminal success",
+      "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+      "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+      "reliability": "Report completion rate separately; no implicit 100% threshold",
+      "verification": "A record candidate requires successful deterministic trajectory replay"
+    },
+    "analysis": {
+      "unit": "Independent training run; three seed pairs, not six independent reset cases",
+      "reliability": "Show both-phase finishing runs, all phase completions, and every seed",
+      "speed": "Per-seed mean 100m game seconds across both phases when both finish; paired percent changes only when both designs finish both phases",
+      "secondary": "Best valid 100m time and conditional finish time retained per run",
+      "learning": "Evaluate fixed quarter-budget checkpoints; no checkpoint selection",
+      "selection": "Every final checkpoint is reported; no seed or model selection",
+      "interpretation": "Descriptive small-sample replication of a selected architecture; not a replicated AI research campaign or a held-out robustness evaluation",
+      "gait": "Inspect fixed-case final replays; speed alone does not establish running"
+    },
+    "failure_policy": "Preserve failed attempts and all charges. No automatic training restarts or extra training budget. Successful training may proceed to its remaining evaluation stages on a later invocation; existing artifacts are verified and retained. Any failed training or evaluation makes the batch incomplete and must be reported.",
+    "protected_sources": {
+      "qwop_lab/__init__.py": "c7237f32dd83f3023c4579256597e12e953d72c052ebb6f5535f9b3ae1730573",
+      "qwop_lab/agents.py": "1c877c5c9d80dab03edf3df98a4e0851c9ac1c241fc7c95e93c951374df13a12",
+      "qwop_lab/architectures.py": "e951105703eadf3853859c9073cfef096b71b2d983e6d0353bdc425c232adcd9",
+      "qwop_lab/artifacts.py": "1c9b5c5416d76ba5d4040ea8ba019056af6e37f5f73d5efb09ab87def1d24431",
+      "qwop_lab/bootstrap.py": "0746246e0e108fd1dfb9479d900e4ef8e5436c5bd0ddcac5f168fef11a8b0c4e",
+      "qwop_lab/browser.py": "7098236c6dbed7784c5f07848f48b8fd3a614e1431747ad453492a4cd652e70d",
+      "qwop_lab/budget.py": "1a270225920ad904b87a1cddb08ac2cb3bdcf2a24e652fe4c58c98bcea04602f",
+      "qwop_lab/campaign.py": "d88b510255578e97dcd4e5d1f680c2bfd12eae447ea187e0679c483472ac102f",
+      "qwop_lab/campaign_recovery.py": "d01682e0816db3510f41089c561407067c3b45fad17eb64833dfcaceec95ce8a",
+      "qwop_lab/campaign_status.py": "2e6ba2faac390726f5c113f884ecbaa456478da26ea62ed7363c4d1b2b1d5b3f",
+      "qwop_lab/candidates/__init__.py": "c43dd3e281cba289f7689fc2c4177fb612285b49901f9ce816ff0a2023462347",
+      "qwop_lab/candidates/body_grouped_v1.py": "1d3c1b1f5ed1c47c45d5fefbd7eeba11e61f8b2bdaa0037daf9342791a40537f",
+      "qwop_lab/candidates/kinematic_v2.py": "8c9f8b6c17aec5a5866ea9483e45d4fb13e4dba40e623652ce56fbab38167bd2",
+      "qwop_lab/cli.py": "6bbd2e32a2f72cc0d219a6e55184260f4bfd381a466c6bf4efb67edcbb01c57a",
+      "qwop_lab/environment.py": "95baef2eedb48cdd5d1b0287a520cb37cba840d583b397ac5d4dd18a143c8caf",
+      "qwop_lab/evaluation.py": "981ddd631a18572718872d97cfe6bf6a8c2c7c0478ef0ed215a6ceb4e705348e",
+      "qwop_lab/pilot.py": "2d2c2a319339256e0f0f119cddebdfce1362a6e07d8b2148d7649177066e3aff",
+      "qwop_lab/replay.py": "4d7933e570e7368d7b667de89a5a5dec0168252bd4636de80bd2a77b025c0bc6",
+      "qwop_lab/replication.py": "7c8e14fb105602f5afd10a3828feae53ed7e0cb7f772f6cb6befd4b2cd84fb83",
+      "qwop_lab/training.py": "7bd7b224fab03007f5f644778cbefe313d11feb9baa1efe84e9023db8904b1c1"
+    },
+    "prior_evidence": {
+      "path": "results/architecture-001/report.md",
+      "sha256": "a2b2e5b4eb3def772de79152c10185d445a0ce5e2a8eb321c2d4f5e52c737bd9"
+    },
+    "paid_model_api_calls": 0,
+    "startup_recovery": {
+      "previous_protocol_sha256": "97d230a299fbdf04285082e142a36c76af38470bf9e45cf792026e6cd1606475",
+      "previous_folder": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001",
+      "failed_runs": [
+        {
+          "path": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001\\baseline\\seed-17",
+          "result_sha256": "d43114a030a0262cd18a50aec822efab9157f2cb6663c35fc8000ff400d7463f"
+        },
+        {
+          "path": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001\\kinematic\\seed-17",
+          "result_sha256": "05cd350699a76ffa0163837ed6c4998bd4bb20a0649faa6ce185c6b7582c7837"
+        },
+        {
+          "path": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001\\baseline\\seed-29",
+          "result_sha256": "619554b3f1336526252393c98eb017320f6583c7b8041a7bef309bf75bf74d59"
+        },
+        {
+          "path": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001\\kinematic\\seed-29",
+          "result_sha256": "c0e4b5a47559a40ba4b63bdd2c1506aecafde567dfb7236bbc51774876158dcb"
+        },
+        {
+          "path": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001\\baseline\\seed-61",
+          "result_sha256": "42c9fdb587eda9af1c1bdc495318fc6188727d8ba97ae342428dfe7797ba8859"
+        },
+        {
+          "path": "C:\\Users\\zachd\\Documents\\ChatGPT\\QWOP\\runs\\replication-001\\kinematic\\seed-61",
+          "result_sha256": "6551689115c99a2c3aae7ced25eda191c635163ee5c2e888818b6ab19df7c57f"
+        }
+      ],
+      "previous_charged_steps": 0,
+      "reason": "All six launches failed before training. Clearing orphaned headless browsers restored startup. Cleanup and registration timeout handling were fixed before this replacement protocol was frozen. Physics and learning settings match."
+    }
+  },
+  "amendment": {
+    "id": "replication-log-lock-continuation-v1",
+    "created_utc": "2026-09-15T23:15:58.018413+00:00",
+    "protocol_sha256": "ee078342605c18ce4fd19080bb0265192a1a7ec449ecbb3d4cc5a59ea46d9015",
+    "implementation_sha256": "5ba3219059081a64c23b38faa93242db01f6dd1c45e2a60da6eee974da5907b0",
+    "source_changes": {},
+    "design": "baseline",
+    "seed": 29,
+    "failed_result_sha256": "edb4c53d94f285662590eb8a6da96f9e1a18366da6e9eecab7dff12890184464",
+    "failed_manifest_sha256": "25066f7646175531851cf726d131a2cca47afd62f89882ecea45eacd6ab59e00",
+    "interrupted_checkpoint_sha256": "c80e0b263dca6fd0907c1507733dbdbfccf348c40d2d67ccc068dc36192b9a7c",
+    "spent_training_steps": 237568,
+    "remaining_training_steps": 811008,
+    "optimizer_updates_at_interrupt": 690,
+    "discarded_rollout_interactions": 2048,
+    "changes": [
+      "Allow one continuation from saved weights and optimizer, within the existing ledger cap",
+      "Preserve the original failed result and manifest; write a separate recovered result",
+      "Reset the game and action RNG to the original training seed; this is not exact resume",
+      "Discard unoptimized rollout data; account for those interactions as already spent",
+      "Retry transient Windows file-replacement permission errors without taking extra game actions",
+      "The continuation process binds the frozen Recorder's JSON writer to this amendment's bounded-retry writer; original training processes keep their frozen source",
+      "Report all three seed pairs and a separate sensitivity analysis of the two unaffected pairs",
+      "No extra training steps or new random initialization are allowed"
+    ]
+  },
+  "summary": {
+    "pairs": [
+      {
+        "seed": 17,
+        "baseline": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.697016716003418,
+          "conditional_mean_100m_game_seconds": 12.697186470031738,
+          "both_phase_mean_100m_game_seconds": 12.697186470031738,
+          "mean_terminal_distance": 100.6656494140625
+        },
+        "kinematic": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.41707706451416,
+          "conditional_mean_100m_game_seconds": 12.41724681854248,
+          "both_phase_mean_100m_game_seconds": 12.41724681854248,
+          "mean_terminal_distance": 101.08440780639648
+        },
+        "kinematic_time_change_percent": -2.2047376570390576
+      },
+      {
+        "seed": 29,
+        "baseline": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.69753646850586,
+          "conditional_mean_100m_game_seconds": 12.73057508468628,
+          "both_phase_mean_100m_game_seconds": 12.73057508468628,
+          "mean_terminal_distance": 101.01047134399414
+        },
+        "kinematic": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.7908296585083,
+          "conditional_mean_100m_game_seconds": 13.030594825744629,
+          "both_phase_mean_100m_game_seconds": 13.030594825744629,
+          "mean_terminal_distance": 100.82952117919922
+        },
+        "kinematic_time_change_percent": 2.35668647380467
+      },
+      {
+        "seed": 61,
+        "baseline": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.684033393859863,
+          "conditional_mean_100m_game_seconds": 12.737181663513184,
+          "both_phase_mean_100m_game_seconds": 12.737181663513184,
+          "mean_terminal_distance": 100.58734893798828
+        },
+        "kinematic": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 13.256916999816895,
+          "conditional_mean_100m_game_seconds": 13.277122020721436,
+          "both_phase_mean_100m_game_seconds": 13.277122020721436,
+          "mean_terminal_distance": 100.64913558959961
+        },
+        "kinematic_time_change_percent": 4.239088139529024
+      }
+    ],
+    "designs": {
+      "baseline": {
+        "training_runs": 3,
+        "runs_finishing_both_phases": 3,
+        "phase_finishes": 6,
+        "phase_episodes": 6,
+        "mean_time_among_both_phase_finishing_runs": 12.7216477394104,
+        "median_time_among_both_phase_finishing_runs": 12.73057508468628,
+        "times_by_successful_seed": [
+          12.697186470031738,
+          12.73057508468628,
+          12.737181663513184
+        ]
+      },
+      "kinematic": {
+        "training_runs": 3,
+        "runs_finishing_both_phases": 3,
+        "phase_finishes": 6,
+        "phase_episodes": 6,
+        "mean_time_among_both_phase_finishing_runs": 12.908321221669516,
+        "median_time_among_both_phase_finishing_runs": 13.030594825744629,
+        "times_by_successful_seed": [
+          12.41724681854248,
+          13.030594825744629,
+          13.277122020721436
+        ]
+      }
+    },
+    "comparable_speed_pairs": 3,
+    "mean_paired_time_change_percent": 1.4636789854315453,
+    "negative_change_means": "Kinematic design is faster",
+    "inference": "Three training seeds; descriptive evidence only. Missing finishes are not imputed or discarded from reliability counts."
+  },
+  "uninterrupted_seed_sensitivity": {
+    "pairs": [
+      {
+        "seed": 17,
+        "baseline": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.697016716003418,
+          "conditional_mean_100m_game_seconds": 12.697186470031738,
+          "both_phase_mean_100m_game_seconds": 12.697186470031738,
+          "mean_terminal_distance": 100.6656494140625
+        },
+        "kinematic": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.41707706451416,
+          "conditional_mean_100m_game_seconds": 12.41724681854248,
+          "both_phase_mean_100m_game_seconds": 12.41724681854248,
+          "mean_terminal_distance": 101.08440780639648
+        },
+        "kinematic_time_change_percent": -2.2047376570390576
+      },
+      {
+        "seed": 61,
+        "baseline": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 12.684033393859863,
+          "conditional_mean_100m_game_seconds": 12.737181663513184,
+          "both_phase_mean_100m_game_seconds": 12.737181663513184,
+          "mean_terminal_distance": 100.58734893798828
+        },
+        "kinematic": {
+          "finishes": 2,
+          "episodes": 2,
+          "best_100m_game_seconds": 13.256916999816895,
+          "conditional_mean_100m_game_seconds": 13.277122020721436,
+          "both_phase_mean_100m_game_seconds": 13.277122020721436,
+          "mean_terminal_distance": 100.64913558959961
+        },
+        "kinematic_time_change_percent": 4.239088139529024
+      }
+    ],
+    "designs": {
+      "baseline": {
+        "training_runs": 2,
+        "runs_finishing_both_phases": 2,
+        "phase_finishes": 4,
+        "phase_episodes": 4,
+        "mean_time_among_both_phase_finishing_runs": 12.717184066772461,
+        "median_time_among_both_phase_finishing_runs": 12.717184066772461,
+        "times_by_successful_seed": [
+          12.697186470031738,
+          12.737181663513184
+        ]
+      },
+      "kinematic": {
+        "training_runs": 2,
+        "runs_finishing_both_phases": 2,
+        "phase_finishes": 4,
+        "phase_episodes": 4,
+        "mean_time_among_both_phase_finishing_runs": 12.847184419631958,
+        "median_time_among_both_phase_finishing_runs": 12.847184419631958,
+        "times_by_successful_seed": [
+          12.41724681854248,
+          13.277122020721436
+        ]
+      }
+    },
+    "comparable_speed_pairs": 2,
+    "mean_paired_time_change_percent": 1.017175241244983,
+    "negative_change_means": "Kinematic design is faster",
+    "inference": "Three training seeds; descriptive evidence only. Missing finishes are not imputed or discarded from reliability counts."
+  },
+  "costs": {
+    "training_steps": 6291456,
+    "evaluation_and_replay_steps": 80999,
+    "total_steps": 6372455,
+    "summed_training_process_seconds": 8863.890265499977,
+    "discarded_rollout_interactions": 2048
+  }
+}

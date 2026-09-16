@@ -1,0 +1,746 @@
+{
+  "status": "complete_with_recovery_amendment",
+  "created_utc": "2026-09-15T21:28:13.864016+00:00",
+  "protocol": {
+    "id": "architecture-campaign-v1",
+    "created_utc": "2026-09-15T20:54:38.243388+00:00",
+    "arms": {
+      "baseline": {
+        "fixed": 1048576
+      },
+      "search": {
+        "small": 524288,
+        "large": 524288
+      },
+      "research": {
+        "proposal-1": 524288,
+        "proposal-2": 524288
+      }
+    },
+    "conventional_layers": {
+      "baseline-fixed": [
+        128,
+        128
+      ],
+      "search-small": [
+        64,
+        64
+      ],
+      "search-large": [
+        256,
+        256
+      ]
+    },
+    "training_steps_per_arm": 1048576,
+    "evaluation_and_replay_cap_per_arm": 75000,
+    "training_wall_seconds_per_arm": 7200,
+    "max_parameters": 250000,
+    "seed": 42,
+    "initialization": "All trials use fresh seeded weights; no historical checkpoint",
+    "checkpoint_interval": 262144,
+    "ppo_config": {
+      "n_steps": 2048,
+      "batch_size": 128,
+      "n_epochs": 6,
+      "learning_rate": 0.0003,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.01,
+      "vf_coef": 0.5,
+      "max_grad_norm": 0.5,
+      "device": "cpu",
+      "verbose": 0
+    },
+    "training_reward": {
+      "time_cost_mult": 10,
+      "success_reward": 50
+    },
+    "contract": {
+      "id": "qwop-lab-v1",
+      "frames_per_step": 4,
+      "max_episode_steps": 5000,
+      "observation": "qwop-gym-1.0.1-normalized-60-float32",
+      "actions": "qwop-gym-1.0.1-full-16-enumerated-key-combinations",
+      "completion": "qwop-gym native is_success at terminal; includes 105m fallback",
+      "score_time": "info.time * 10; raw info.time retained separately",
+      "first_100m": "first observed distance >=100; sampled every four physics frames",
+      "reset": "hard reset(seed), followed by case.soft_resets soft resets",
+      "inference": "deterministic argmax",
+      "browser_flags": [
+        "--headless=new",
+        "--allow-file-access-from-files",
+        "--disable-extensions",
+        "--disable-notifications",
+        "--disable-popup-blocking",
+        "--window-size=800,650",
+        "--disable-background-timer-throttling",
+        "--disable-renderer-backgrounding",
+        "--enable-unsafe-swiftshader",
+        "--incognito"
+      ],
+      "runtime_id": "a21cdb8e61e3b5333c21f8b52c4775e5a61570a0cb46ed1313646cb58d1b6aba",
+      "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+    },
+    "scoring": {
+      "id": "finish-line-v2",
+      "primary": "best_100m_game_seconds",
+      "direction": "minimize",
+      "valid_finish": "Recorded 100m crossing and native terminal success",
+      "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+      "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+      "reliability": "Report completion rate separately; no implicit 100% threshold",
+      "verification": "A record candidate requires successful deterministic trajectory replay"
+    },
+    "selection": "Final trial checkpoints only; valid best 100m time, then reliability; if none finish, mean terminal distance. Intermediate checkpoints diagnose learning.",
+    "development_cases": [
+      {
+        "seed": 101,
+        "soft_resets": 0
+      },
+      {
+        "seed": 101,
+        "soft_resets": 1
+      }
+    ],
+    "final_cases": [
+      {
+        "seed": 101,
+        "soft_resets": 0
+      },
+      {
+        "seed": 101,
+        "soft_resets": 1
+      },
+      {
+        "seed": 202,
+        "soft_resets": 0
+      },
+      {
+        "seed": 202,
+        "soft_resets": 1
+      },
+      {
+        "seed": 303,
+        "soft_resets": 0
+      },
+      {
+        "seed": 303,
+        "soft_resets": 1
+      }
+    ],
+    "final_case_warning": "Expanded descriptive development evaluation, NOT a held-out robustness test. Different seeds mostly repeat two physical reset phases.",
+    "researcher": {
+      "execution": "Codex researcher in the current user task, explicit proposal files",
+      "model_snapshot": "Not independently verified by the local runner",
+      "paid_model_api_calls_by_runner": 0,
+      "scope": "Architecture and deterministic features of the same 60 observations",
+      "adaptive_trial": "proposal-2 must cite the completed proposal-1 result hash"
+    },
+    "comparison_limits": [
+      "One training seed and one campaign per method; no statistical superiority claim",
+      "Custom architectures are unrestricted within the interface and parameter cap; ordinary search explores only two predefined standard MLP widths",
+      "Equal training interactions and evaluation caps, not equal realized compute cost",
+      "Researcher also built the harness and can see baseline results; not blinded",
+      "No algorithm sweep or QR-DQN baseline yet; this isolates architecture within PPO",
+      "Budget is an initial screen, below upstream's recommended full PPO training",
+      "Gait quality is judged from replay, not inferred from speed alone",
+      "Before freezing this protocol, a custom-architecture engineering smoke test used 8192 training steps, 30000 evaluation steps and up to 5000 replay steps; these are disclosed separately and no smoke-test weights are reused"
+    ],
+    "protected_sources": {
+      "agents.py": "1c877c5c9d80dab03edf3df98a4e0851c9ac1c241fc7c95e93c951374df13a12",
+      "architectures.py": "e951105703eadf3853859c9073cfef096b71b2d983e6d0353bdc425c232adcd9",
+      "artifacts.py": "1c9b5c5416d76ba5d4040ea8ba019056af6e37f5f73d5efb09ab87def1d24431",
+      "browser.py": "3a2364c656bd56a479894d5f1bd2803bd5c05e3c3ef41803994144f8ee2185b9",
+      "budget.py": "1a270225920ad904b87a1cddb08ac2cb3bdcf2a24e652fe4c58c98bcea04602f",
+      "campaign.py": "d88b510255578e97dcd4e5d1f680c2bfd12eae447ea187e0679c483472ac102f",
+      "environment.py": "718036ec97e262d08a72a2ffa05317420f2752ff5a1fc05d3ebefa8252d10006",
+      "evaluation.py": "981ddd631a18572718872d97cfe6bf6a8c2c7c0478ef0ed215a6ceb4e705348e",
+      "replay.py": "4d7933e570e7368d7b667de89a5a5dec0168252bd4636de80bd2a77b025c0bc6",
+      "training.py": "7bd7b224fab03007f5f644778cbefe313d11feb9baa1efe84e9023db8904b1c1"
+    }
+  },
+  "amendment": {
+    "id": "transport-recovery-001",
+    "created_utc": "2026-09-15T21:00:27.424028+00:00",
+    "protocol_sha256": "16e568620254be9dccb750fad24fc8e996a91a4118884a01720e0b10a01f6808",
+    "failed_result_sha256": "a52e9cda08da3fee50a6f5aa0ea7bdb240bff28c516afdc0f94bc9000e111a0a",
+    "failed_training_manifest_sha256": "370757d4731ada7cddf2eed02fbc0ab00fb8d4a73f5f8f3235d2c1349ace295c",
+    "implementation_sha256": "d01682e0816db3510f41089c561407067c3b45fad17eb64833dfcaceec95ce8a",
+    "diagnosis": "Browser response timed out; exact cause not established. No action was resent.",
+    "failed_attempt_charged_steps": 46253,
+    "retry_slot": "proposal-1-retry",
+    "retry_steps": 477184,
+    "unused_rounding_steps": 851,
+    "retry_architecture": {
+      "layers": [
+        64,
+        64
+      ],
+      "activation": "Tanh",
+      "extractor": "qwop_lab.candidates.body_grouped_v1:BodyGroupedExtractor"
+    },
+    "changes": [
+      "Allow one fresh retry of the identical first architecture within that slot's unused budget",
+      "Evaluate the retry only at its final trained checkpoint because its shortened allocation no longer divides the original checkpoint interval",
+      "Second proposal must cite both the original failed result and the completed retry",
+      "The original training/evaluation ledgers and total caps stay in force; no additional training steps are granted",
+      "Compare the completed retry as trial one, while reporting its shorter effective training and failed-attempt cost",
+      "If another transport error occurs, preserve it and leave this campaign incomplete"
+    ]
+  },
+  "effective_arms": {
+    "baseline": {
+      "fixed": 1048576
+    },
+    "search": {
+      "small": 524288,
+      "large": 524288
+    },
+    "research": {
+      "proposal-1-retry": 477184,
+      "proposal-2": 524288
+    }
+  },
+  "comparisons": {
+    "baseline": {
+      "selected_slot": "fixed",
+      "summary": {
+        "scoring": {
+          "id": "finish-line-v2",
+          "primary": "best_100m_game_seconds",
+          "direction": "minimize",
+          "valid_finish": "Recorded 100m crossing and native terminal success",
+          "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+          "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+          "reliability": "Report completion rate separately; no implicit 100% threshold",
+          "verification": "A record candidate requires successful deterministic trajectory replay"
+        },
+        "valid_100m_finishes": 6,
+        "valid_100m_finish_rate": 1.0,
+        "best_100m_game_seconds": 12.696907043457031,
+        "mean_100m_game_seconds": 12.737065156300863,
+        "median_100m_game_seconds": 12.73703145980835,
+        "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+        "episodes": 6,
+        "finishes": 6,
+        "success_rate": 1.0,
+        "mean_finish_score_time": 128.05398305257162,
+        "median_finish_score_time": 128.05365085601807,
+        "best_finish_score_time": 127.7023983001709,
+        "mean_distance": 100.61569595336914,
+        "total_steps": 5763,
+        "unique_initial_observations": 1,
+        "unique_action_sequences": 2,
+        "unique_trajectories": 5,
+        "interpretation": "Descriptive validation cases, not independent training replications"
+      },
+      "video": {
+        "verified": true,
+        "verified_transitions": 963,
+        "source_replay_sha256": "aa787df280e5e51bb5886f2c3974f070efa98e67d6af994ff8c857e9e351cf69",
+        "video_sha256": "03c8f60f3b686ccf27d38a717ad382d918b58c5deb8d5c736ca8e375e245a8eb",
+        "fps": 30,
+        "frames": 3881,
+        "duration_seconds": 129.36666666666667,
+        "final_hold_seconds": 1,
+        "initial_score_time": 0.040233335457742214,
+        "reset_raw_time_offset": -5.9999991208314896e-05,
+        "elapsed_raw_time_tolerance": 5e-06,
+        "final_score_time": 128.4062957763672,
+        "overlay_clock": "raw info.time, game display scale; video uses simulation time",
+        "case": {
+          "id": "seed-101-soft-0",
+          "seed": 101,
+          "soft_resets": 0
+        },
+        "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+      },
+      "trainable_parameters": 50833
+    },
+    "search": {
+      "selected_slot": "large",
+      "summary": {
+        "scoring": {
+          "id": "finish-line-v2",
+          "primary": "best_100m_game_seconds",
+          "direction": "minimize",
+          "valid_finish": "Recorded 100m crossing and native terminal success",
+          "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+          "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+          "reliability": "Report completion rate separately; no implicit 100% threshold",
+          "verification": "A record candidate requires successful deterministic trajectory replay"
+        },
+        "valid_100m_finishes": 6,
+        "valid_100m_finish_rate": 1.0,
+        "best_100m_game_seconds": 13.217116355895996,
+        "mean_100m_game_seconds": 13.270390033721924,
+        "median_100m_game_seconds": 13.270450115203857,
+        "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+        "episodes": 6,
+        "finishes": 6,
+        "success_rate": 1.0,
+        "mean_finish_score_time": 133.3872334162394,
+        "median_finish_score_time": 133.38783264160156,
+        "best_finish_score_time": 132.73783683776855,
+        "mean_distance": 100.5842514038086,
+        "total_steps": 6003,
+        "unique_initial_observations": 1,
+        "unique_action_sequences": 2,
+        "unique_trajectories": 6,
+        "interpretation": "Descriptive validation cases, not independent training replications"
+      },
+      "video": {
+        "verified": true,
+        "verified_transitions": 996,
+        "source_replay_sha256": "25041ce536c329ca33d420ee4c3118369a3f7f9e6604cf497b45a133c1402d39",
+        "video_sha256": "ddb3684f081f4502e52de44e776ba19e180caee4d8b276d8bac138d712cb9fb7",
+        "fps": 30,
+        "frames": 4011,
+        "duration_seconds": 133.7,
+        "final_hold_seconds": 1,
+        "initial_score_time": 0.039833332411944866,
+        "reset_raw_time_offset": 4.00003045797348e-05,
+        "elapsed_raw_time_tolerance": 5e-06,
+        "final_score_time": 132.74023056030273,
+        "overlay_clock": "raw info.time, game display scale; video uses simulation time",
+        "case": {
+          "id": "seed-101-soft-0",
+          "seed": 101,
+          "soft_resets": 0
+        },
+        "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+      },
+      "trainable_parameters": 167185
+    },
+    "research": {
+      "selected_slot": "proposal-2",
+      "summary": {
+        "scoring": {
+          "id": "finish-line-v2",
+          "primary": "best_100m_game_seconds",
+          "direction": "minimize",
+          "valid_finish": "Recorded 100m crossing and native terminal success",
+          "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+          "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+          "reliability": "Report completion rate separately; no implicit 100% threshold",
+          "verification": "A record candidate requires successful deterministic trajectory replay"
+        },
+        "valid_100m_finishes": 6,
+        "valid_100m_finish_rate": 1.0,
+        "best_100m_game_seconds": 12.763813018798828,
+        "mean_100m_game_seconds": 12.810428301493326,
+        "median_100m_game_seconds": 12.810480117797852,
+        "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+        "episodes": 6,
+        "finishes": 6,
+        "success_rate": 1.0,
+        "mean_finish_score_time": 130.73761622111002,
+        "median_finish_score_time": 130.73813438415527,
+        "best_finish_score_time": 130.4047966003418,
+        "mean_distance": 102.14257049560547,
+        "total_steps": 5883,
+        "unique_initial_observations": 1,
+        "unique_action_sequences": 2,
+        "unique_trajectories": 6,
+        "interpretation": "Descriptive validation cases, not independent training replications"
+      },
+      "video": {
+        "verified": true,
+        "verified_transitions": 978,
+        "source_replay_sha256": "632220f9fa941afc134528611986f9f9100c8b291c45fe59bd07fa2ee00836d3",
+        "video_sha256": "a9a06d50a7661eff89a0b0e55c7b25fcf57e2e58fb0956e80dcc94739b1870f1",
+        "fps": 30,
+        "frames": 3941,
+        "duration_seconds": 131.36666666666667,
+        "final_hold_seconds": 1,
+        "initial_score_time": 0.040433332324028015,
+        "reset_raw_time_offset": 1.00000761449337e-05,
+        "elapsed_raw_time_tolerance": 5e-06,
+        "final_score_time": 130.40719985961914,
+        "overlay_clock": "raw info.time, game display scale; video uses simulation time",
+        "case": {
+          "id": "seed-101-soft-0",
+          "seed": 101,
+          "soft_resets": 0
+        },
+        "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+      },
+      "trainable_parameters": 26449
+    }
+  },
+  "budget": {
+    "protocol_sha256": "16e568620254be9dccb750fad24fc8e996a91a4118884a01720e0b10a01f6808",
+    "arms": {
+      "baseline": {
+        "trials": {
+          "fixed": {
+            "status": "complete",
+            "requested_steps": 1048576,
+            "summary": {
+              "scoring": {
+                "id": "finish-line-v2",
+                "primary": "best_100m_game_seconds",
+                "direction": "minimize",
+                "valid_finish": "Recorded 100m crossing and native terminal success",
+                "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+                "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+                "reliability": "Report completion rate separately; no implicit 100% threshold",
+                "verification": "A record candidate requires successful deterministic trajectory replay"
+              },
+              "valid_100m_finishes": 2,
+              "valid_100m_finish_rate": 1.0,
+              "best_100m_game_seconds": 12.69694709777832,
+              "mean_100m_game_seconds": 12.737152099609375,
+              "median_100m_game_seconds": 12.737152099609375,
+              "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+              "episodes": 2,
+              "finishes": 2,
+              "success_rate": 1.0,
+              "mean_finish_score_time": 128.05484771728516,
+              "median_finish_score_time": 128.05484771728516,
+              "best_finish_score_time": 127.70279884338379,
+              "mean_distance": 100.61569595336914,
+              "total_steps": 1921,
+              "unique_initial_observations": 1,
+              "unique_action_sequences": 2,
+              "unique_trajectories": 2,
+              "interpretation": "Descriptive validation cases, not independent training replications"
+            },
+            "progress": {
+              "steps": 1048576,
+              "wall_seconds": 1353.1402347999974,
+              "steps_per_second": 774.920420687207
+            }
+          }
+        },
+        "training_budget": {
+          "cap": 1048576,
+          "charged_steps": 1048576,
+          "confirmed_steps": 1048576,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 1048576,
+              "used": 1048576,
+              "closed": 1
+            }
+          ]
+        },
+        "evaluation_budget": {
+          "cap": 75000,
+          "charged_steps": 15199,
+          "confirmed_steps": 15199,
+          "remaining_steps": 59801,
+          "leases": [
+            {
+              "label": "baseline/fixed@262144",
+              "charged": 2455,
+              "used": 2455,
+              "closed": 1
+            },
+            {
+              "label": "baseline/fixed@524288",
+              "charged": 2159,
+              "used": 2159,
+              "closed": 1
+            },
+            {
+              "label": "baseline/fixed@786432",
+              "charged": 1938,
+              "used": 1938,
+              "closed": 1
+            },
+            {
+              "label": "baseline/fixed@1048576",
+              "charged": 1921,
+              "used": 1921,
+              "closed": 1
+            },
+            {
+              "label": "selected-baseline",
+              "charged": 5763,
+              "used": 5763,
+              "closed": 1
+            },
+            {
+              "label": "replay:baseline: fixed",
+              "charged": 963,
+              "used": 963,
+              "closed": 1
+            }
+          ]
+        }
+      },
+      "search": {
+        "trials": {
+          "small": {
+            "status": "complete",
+            "requested_steps": 524288,
+            "summary": {
+              "scoring": {
+                "id": "finish-line-v2",
+                "primary": "best_100m_game_seconds",
+                "direction": "minimize",
+                "valid_finish": "Recorded 100m crossing and native terminal success",
+                "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+                "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+                "reliability": "Report completion rate separately; no implicit 100% threshold",
+                "verification": "A record candidate requires successful deterministic trajectory replay"
+              },
+              "valid_100m_finishes": 0,
+              "valid_100m_finish_rate": 0.0,
+              "best_100m_game_seconds": null,
+              "mean_100m_game_seconds": null,
+              "median_100m_game_seconds": null,
+              "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+              "episodes": 2,
+              "finishes": 0,
+              "success_rate": 0.0,
+              "mean_finish_score_time": null,
+              "median_finish_score_time": null,
+              "best_finish_score_time": null,
+              "mean_distance": 0.5034101009368896,
+              "total_steps": 22,
+              "unique_initial_observations": 1,
+              "unique_action_sequences": 1,
+              "unique_trajectories": 2,
+              "interpretation": "Descriptive validation cases, not independent training replications"
+            },
+            "progress": {
+              "steps": 524288,
+              "wall_seconds": 672.5683868999986,
+              "steps_per_second": 779.5311379658322
+            }
+          },
+          "large": {
+            "status": "complete",
+            "requested_steps": 524288,
+            "summary": {
+              "scoring": {
+                "id": "finish-line-v2",
+                "primary": "best_100m_game_seconds",
+                "direction": "minimize",
+                "valid_finish": "Recorded 100m crossing and native terminal success",
+                "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+                "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+                "reliability": "Report completion rate separately; no implicit 100% threshold",
+                "verification": "A record candidate requires successful deterministic trajectory replay"
+              },
+              "valid_100m_finishes": 2,
+              "valid_100m_finish_rate": 1.0,
+              "best_100m_game_seconds": 13.217436790466309,
+              "mean_100m_game_seconds": 13.270520210266113,
+              "median_100m_game_seconds": 13.270520210266113,
+              "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+              "episodes": 2,
+              "finishes": 2,
+              "success_rate": 1.0,
+              "mean_finish_score_time": 133.38853359222412,
+              "median_finish_score_time": 133.38853359222412,
+              "best_finish_score_time": 132.74103164672852,
+              "mean_distance": 100.5842514038086,
+              "total_steps": 2001,
+              "unique_initial_observations": 1,
+              "unique_action_sequences": 2,
+              "unique_trajectories": 2,
+              "interpretation": "Descriptive validation cases, not independent training replications"
+            },
+            "progress": {
+              "steps": 524288,
+              "wall_seconds": 699.7635958999999,
+              "steps_per_second": 749.2358891943896
+            }
+          }
+        },
+        "training_budget": {
+          "cap": 1048576,
+          "charged_steps": 1048576,
+          "confirmed_steps": 1048576,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 524288,
+              "used": 524288,
+              "closed": 1
+            },
+            {
+              "label": "train:training",
+              "charged": 524288,
+              "used": 524288,
+              "closed": 1
+            }
+          ]
+        },
+        "evaluation_budget": {
+          "cap": 75000,
+          "charged_steps": 10210,
+          "confirmed_steps": 10210,
+          "remaining_steps": 64790,
+          "leases": [
+            {
+              "label": "search/small@262144",
+              "charged": 30,
+              "used": 30,
+              "closed": 1
+            },
+            {
+              "label": "search/small@524288",
+              "charged": 22,
+              "used": 22,
+              "closed": 1
+            },
+            {
+              "label": "search/large@262144",
+              "charged": 1158,
+              "used": 1158,
+              "closed": 1
+            },
+            {
+              "label": "search/large@524288",
+              "charged": 2001,
+              "used": 2001,
+              "closed": 1
+            },
+            {
+              "label": "selected-search",
+              "charged": 6003,
+              "used": 6003,
+              "closed": 1
+            },
+            {
+              "label": "replay:search: large",
+              "charged": 996,
+              "used": 996,
+              "closed": 1
+            }
+          ]
+        }
+      },
+      "research": {
+        "trials": {
+          "proposal-1": {
+            "status": "failed",
+            "requested_steps": 524288,
+            "progress": {
+              "steps": 40960,
+              "wall_seconds": 60.820818000000145,
+              "steps_per_second": 673.453619121004
+            }
+          },
+          "proposal-2": {
+            "status": "complete",
+            "requested_steps": 524288,
+            "summary": {
+              "scoring": {
+                "id": "finish-line-v2",
+                "primary": "best_100m_game_seconds",
+                "direction": "minimize",
+                "valid_finish": "Recorded 100m crossing and native terminal success",
+                "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+                "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+                "reliability": "Report completion rate separately; no implicit 100% threshold",
+                "verification": "A record candidate requires successful deterministic trajectory replay"
+              },
+              "valid_100m_finishes": 2,
+              "valid_100m_finish_rate": 1.0,
+              "best_100m_game_seconds": 12.763973236083984,
+              "mean_100m_game_seconds": 12.81047010421753,
+              "median_100m_game_seconds": 12.81047010421753,
+              "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+              "episodes": 2,
+              "finishes": 2,
+              "success_rate": 1.0,
+              "mean_finish_score_time": 130.73803424835205,
+              "median_finish_score_time": 130.73803424835205,
+              "best_finish_score_time": 130.40639877319336,
+              "mean_distance": 102.14257049560547,
+              "total_steps": 1961,
+              "unique_initial_observations": 1,
+              "unique_action_sequences": 2,
+              "unique_trajectories": 2,
+              "interpretation": "Descriptive validation cases, not independent training replications"
+            },
+            "progress": {
+              "steps": 524288,
+              "wall_seconds": 678.069563099998,
+              "steps_per_second": 773.206804332966
+            }
+          }
+        },
+        "training_budget": {
+          "cap": 1048576,
+          "charged_steps": 1047725,
+          "confirmed_steps": 1047725,
+          "remaining_steps": 851,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 46253,
+              "used": 46253,
+              "closed": 1
+            },
+            {
+              "label": "train:training",
+              "charged": 477184,
+              "used": 477184,
+              "closed": 1
+            },
+            {
+              "label": "train:training",
+              "charged": 524288,
+              "used": 524288,
+              "closed": 1
+            }
+          ]
+        },
+        "evaluation_budget": {
+          "cap": 75000,
+          "charged_steps": 14713,
+          "confirmed_steps": 14713,
+          "remaining_steps": 60287,
+          "leases": [
+            {
+              "label": "research/proposal-1-retry@477184",
+              "charged": 2379,
+              "used": 2379,
+              "closed": 1
+            },
+            {
+              "label": "replay:First custom design: shared leg encoder",
+              "charged": 1193,
+              "used": 1193,
+              "closed": 1
+            },
+            {
+              "label": "research/proposal-2@262144",
+              "charged": 2319,
+              "used": 2319,
+              "closed": 1
+            },
+            {
+              "label": "research/proposal-2@524288",
+              "charged": 1961,
+              "used": 1961,
+              "closed": 1
+            },
+            {
+              "label": "selected-research",
+              "charged": 5883,
+              "used": 5883,
+              "closed": 1
+            },
+            {
+              "label": "replay:research: proposal-2",
+              "charged": 978,
+              "used": 978,
+              "closed": 1
+            }
+          ]
+        }
+      }
+    }
+  }
+}

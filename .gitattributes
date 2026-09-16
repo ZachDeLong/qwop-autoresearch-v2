@@ -1,2 +1,7 @@
 * text=auto eol=lf
 *.gz -text
+
+# Preserve recorded evidence exactly, including Windows line endings.
+results/** -text whitespace=cr-at-eol
+# Matplotlib emits insignificant trailing spaces in generated SVG paths.
+results/**/*.svg -whitespace

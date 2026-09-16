@@ -1,0 +1,17 @@
+{
+  "summary": "All six final policies show knee-scooting in the reviewed replay samples: a low pelvis, one leg folded near the track, and the other extended forward. None of the reviewed samples shows convincing upright running. The fastest final model improves the speed of this gait, rather than introducing a new running gait.",
+  "method": "Visual review of frames at 20%, 50%, and 80% of each fully verified final phase-zero replay, across both designs and all three training seeds.",
+  "training_seeds": [
+    17,
+    29,
+    61
+  ],
+  "designs": [
+    "baseline",
+    "kinematic"
+  ],
+  "reviewed_frames": 18,
+  "formal_gait_classifier": false,
+  "limit": "Qualitative frame review does not characterize every instant or quantify contact forces.",
+  "intermediate_diagnostic": "The baseline seed-61 checkpoint at 786432 steps spends about 16.24 game seconds near the start before knee-scooting forward. Two separately charged diagnostic prefixes verified 300 and 1800 transitions; this checkpoint was not selected for final comparison."
+}

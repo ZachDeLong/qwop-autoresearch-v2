@@ -1,0 +1,10 @@
+{
+  "training_steps": 3144877,
+  "training_steps_in_completed_trials": 3098624,
+  "training_steps_in_failed_attempts": 46253,
+  "evaluation_and_replay_steps": 40122,
+  "total_campaign_steps": 3184999,
+  "summed_training_wall_seconds": 4241.6342165999995,
+  "wall_time_note": "Training processes overlap; summed durations are not elapsed campaign time or CPU-seconds.",
+  "separate_engineering_smoke_steps": 43192
+}

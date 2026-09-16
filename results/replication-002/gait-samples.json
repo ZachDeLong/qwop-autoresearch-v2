@@ -1,0 +1,113 @@
+{
+  "method": "20%, 50%, 80% of each fixed-case final replay",
+  "samples": [
+    {
+      "design": "baseline",
+      "seed": 17,
+      "video_seconds": 25.54,
+      "fraction": 0.2
+    },
+    {
+      "design": "baseline",
+      "seed": 17,
+      "video_seconds": 63.849999999999994,
+      "fraction": 0.5
+    },
+    {
+      "design": "baseline",
+      "seed": 17,
+      "video_seconds": 102.16,
+      "fraction": 0.8
+    },
+    {
+      "design": "kinematic",
+      "seed": 17,
+      "video_seconds": 25.12,
+      "fraction": 0.2
+    },
+    {
+      "design": "kinematic",
+      "seed": 17,
+      "video_seconds": 62.8,
+      "fraction": 0.5
+    },
+    {
+      "design": "kinematic",
+      "seed": 17,
+      "video_seconds": 100.48,
+      "fraction": 0.8
+    },
+    {
+      "design": "baseline",
+      "seed": 29,
+      "video_seconds": 25.573333333333338,
+      "fraction": 0.2
+    },
+    {
+      "design": "baseline",
+      "seed": 29,
+      "video_seconds": 63.93333333333334,
+      "fraction": 0.5
+    },
+    {
+      "design": "baseline",
+      "seed": 29,
+      "video_seconds": 102.29333333333335,
+      "fraction": 0.8
+    },
+    {
+      "design": "kinematic",
+      "seed": 29,
+      "video_seconds": 25.726666666666667,
+      "fraction": 0.2
+    },
+    {
+      "design": "kinematic",
+      "seed": 29,
+      "video_seconds": 64.31666666666666,
+      "fraction": 0.5
+    },
+    {
+      "design": "kinematic",
+      "seed": 29,
+      "video_seconds": 102.90666666666667,
+      "fraction": 0.8
+    },
+    {
+      "design": "baseline",
+      "seed": 61,
+      "video_seconds": 25.486666666666668,
+      "fraction": 0.2
+    },
+    {
+      "design": "baseline",
+      "seed": 61,
+      "video_seconds": 63.71666666666667,
+      "fraction": 0.5
+    },
+    {
+      "design": "baseline",
+      "seed": 61,
+      "video_seconds": 101.94666666666667,
+      "fraction": 0.8
+    },
+    {
+      "design": "kinematic",
+      "seed": 61,
+      "video_seconds": 26.746666666666666,
+      "fraction": 0.2
+    },
+    {
+      "design": "kinematic",
+      "seed": 61,
+      "video_seconds": 66.86666666666666,
+      "fraction": 0.5
+    },
+    {
+      "design": "kinematic",
+      "seed": 61,
+      "video_seconds": 106.98666666666666,
+      "fraction": 0.8
+    }
+  ]
+}

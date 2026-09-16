@@ -1,0 +1,15 @@
+{
+  "training_steps": 6291456,
+  "evaluation_and_replay_steps": 80999,
+  "total_steps": 6372455,
+  "summed_training_process_seconds": 8863.890265499977,
+  "discarded_rollout_interactions": 2048,
+  "posthoc_diagnostic_replay_steps": 2100,
+  "separate_startup_checks": {
+    "replication-startup-check.sqlite": 16,
+    "replication-startup-fixed.sqlite": 16,
+    "replication-startup-physics.sqlite": 963
+  },
+  "failed_launch_training_steps": 0,
+  "failed_startup_process_seconds": 381.58996719999413
+}

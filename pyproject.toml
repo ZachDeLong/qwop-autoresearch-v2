@@ -23,6 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest==8.4.2", "ruff==0.12.12"]
+report = ["matplotlib==3.11.2"]
 
 [project.scripts]
 qwop-lab = "qwop_lab.cli:main"

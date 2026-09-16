@@ -51,7 +51,7 @@ def annotated(rgb, label, state):
         status = "TIMEOUT"
     draw.text(
         (12, 33),
-        f"{state['score_time']:.2f}s   {state['distance']:.2f}m   {status}",
+        f"{state['raw_time']:.2f}s game   {state['distance']:.2f}m   {status}",
         font=font,
         fill=(135, 217, 190),
     )
@@ -153,6 +153,7 @@ def replay(replay_file, output, ledger, label="Verified replay"):
             "reset_raw_time_offset": time_offset,
             "elapsed_raw_time_tolerance": 5e-6,
             "final_score_time": state["score_time"],
+            "overlay_clock": "raw info.time, game display scale; video uses simulation time",
             "case": data["case"],
             "contract_id": data["contract"]["contract_id"],
         }

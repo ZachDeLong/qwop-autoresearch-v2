@@ -3,7 +3,30 @@
 A small restart of the QWOP experiment: reproducible evaluation, verified video replay,
 and a controlled PPO pilot. The aim is both better running and evidence we can trust.
 
-This first milestone compares two equal-budget fine-tuning runs from the same historical
+The first architecture research campaign compared fresh PPO training, a fixed
+baseline, predefined architecture search, and two auditable AI proposals. See
+[RESEARCH_PLAN.md](RESEARCH_PLAN.md) for budgets, methodology, commands, and limitations.
+
+The first architecture campaign is recorded in
+[results/architecture-001/report.md](results/architecture-001/report.md), with a frozen
+protocol, an explicit transport-failure amendment, learning curves, and a hash-indexed
+archive of checkpoints and raw trajectories.
+
+The completed [fresh-seed replication](results/replication-002/report.md) trains the
+selected kinematic architecture and original baseline from scratch on seeds 17, 29,
+and 61 with 1,048,576 interactions per run. The custom design uses 48% fewer parameters,
+wins one of three seed comparisons, and averages 1.46% slower. All final models finish
+both reset phases, but all reviewed replays show knee-scooting. Baseline seed 29 required
+an explicitly recorded continuation; the two uninterrupted pairs also give mixed results.
+This tests the selected design, not a replicated AI research process.
+
+The report's hash-indexed archive preserves the exact study source and failure evidence.
+Subsequent maintenance adds bounded Windows JSON-write retries, browser shutdown cleanup,
+and failure exit status for batch jobs. These fixes are outside the frozen study; its
+source guards intentionally reject reruns with changed live code. Use the archived
+source and pinned runtime to reproduce that study, or initialize a new protocol.
+
+The earlier pilot compares two equal-budget fine-tuning runs from the same historical
 PPO checkpoint. The treatment changes **only the per-step time penalty from 10 to 30**.
 The control continues training with the original reward. This is a single-seed development
 pilot, not yet a test of whether an AI researcher beats ordinary search.

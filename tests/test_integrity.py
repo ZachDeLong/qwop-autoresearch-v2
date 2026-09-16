@@ -129,9 +129,9 @@ def test_rollout_and_summary_report_duplicates_honestly():
 
 
 def test_select_replay_prioritizes_finish_then_speed():
-    slow = {"is_success": True, "score_time": 160, "distance": 105}
-    fast = {"is_success": True, "score_time": 130, "distance": 100.2}
-    fall = {"is_success": False, "score_time": 5, "distance": 20}
+    slow = {"is_success": True, "score_time": 160, "first_100m_score_time": 150, "distance": 105}
+    fast = {"is_success": True, "score_time": 170, "first_100m_score_time": 130, "distance": 100.2}
+    fall = {"is_success": False, "score_time": 5, "first_100m_score_time": None, "distance": 20}
     assert select_replay([slow, fast, fall]) is fast
     assert select_replay([fall]) is fall
     with pytest.raises(ValueError):

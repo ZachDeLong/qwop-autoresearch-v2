@@ -1,0 +1,159 @@
+{
+  "id": "architecture-campaign-v1",
+  "created_utc": "2026-09-15T20:54:38.243388+00:00",
+  "arms": {
+    "baseline": {
+      "fixed": 1048576
+    },
+    "search": {
+      "small": 524288,
+      "large": 524288
+    },
+    "research": {
+      "proposal-1": 524288,
+      "proposal-2": 524288
+    }
+  },
+  "conventional_layers": {
+    "baseline-fixed": [
+      128,
+      128
+    ],
+    "search-small": [
+      64,
+      64
+    ],
+    "search-large": [
+      256,
+      256
+    ]
+  },
+  "training_steps_per_arm": 1048576,
+  "evaluation_and_replay_cap_per_arm": 75000,
+  "training_wall_seconds_per_arm": 7200,
+  "max_parameters": 250000,
+  "seed": 42,
+  "initialization": "All trials use fresh seeded weights; no historical checkpoint",
+  "checkpoint_interval": 262144,
+  "ppo_config": {
+    "n_steps": 2048,
+    "batch_size": 128,
+    "n_epochs": 6,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "ent_coef": 0.01,
+    "vf_coef": 0.5,
+    "max_grad_norm": 0.5,
+    "device": "cpu",
+    "verbose": 0
+  },
+  "training_reward": {
+    "time_cost_mult": 10,
+    "success_reward": 50
+  },
+  "contract": {
+    "id": "qwop-lab-v1",
+    "frames_per_step": 4,
+    "max_episode_steps": 5000,
+    "observation": "qwop-gym-1.0.1-normalized-60-float32",
+    "actions": "qwop-gym-1.0.1-full-16-enumerated-key-combinations",
+    "completion": "qwop-gym native is_success at terminal; includes 105m fallback",
+    "score_time": "info.time * 10; raw info.time retained separately",
+    "first_100m": "first observed distance >=100; sampled every four physics frames",
+    "reset": "hard reset(seed), followed by case.soft_resets soft resets",
+    "inference": "deterministic argmax",
+    "browser_flags": [
+      "--headless=new",
+      "--allow-file-access-from-files",
+      "--disable-extensions",
+      "--disable-notifications",
+      "--disable-popup-blocking",
+      "--window-size=800,650",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--enable-unsafe-swiftshader",
+      "--incognito"
+    ],
+    "runtime_id": "a21cdb8e61e3b5333c21f8b52c4775e5a61570a0cb46ed1313646cb58d1b6aba",
+    "contract_id": "81018531fcbeaa88a093048eb1ac5d57ae16b62b405b4d2c178581f2e6bed308"
+  },
+  "scoring": {
+    "id": "finish-line-v2",
+    "primary": "best_100m_game_seconds",
+    "direction": "minimize",
+    "valid_finish": "Recorded 100m crossing and native terminal success",
+    "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+    "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+    "reliability": "Report completion rate separately; no implicit 100% threshold",
+    "verification": "A record candidate requires successful deterministic trajectory replay"
+  },
+  "selection": "Final trial checkpoints only; valid best 100m time, then reliability; if none finish, mean terminal distance. Intermediate checkpoints diagnose learning.",
+  "development_cases": [
+    {
+      "seed": 101,
+      "soft_resets": 0
+    },
+    {
+      "seed": 101,
+      "soft_resets": 1
+    }
+  ],
+  "final_cases": [
+    {
+      "seed": 101,
+      "soft_resets": 0
+    },
+    {
+      "seed": 101,
+      "soft_resets": 1
+    },
+    {
+      "seed": 202,
+      "soft_resets": 0
+    },
+    {
+      "seed": 202,
+      "soft_resets": 1
+    },
+    {
+      "seed": 303,
+      "soft_resets": 0
+    },
+    {
+      "seed": 303,
+      "soft_resets": 1
+    }
+  ],
+  "final_case_warning": "Expanded descriptive development evaluation, NOT a held-out robustness test. Different seeds mostly repeat two physical reset phases.",
+  "researcher": {
+    "execution": "Codex researcher in the current user task, explicit proposal files",
+    "model_snapshot": "Not independently verified by the local runner",
+    "paid_model_api_calls_by_runner": 0,
+    "scope": "Architecture and deterministic features of the same 60 observations",
+    "adaptive_trial": "proposal-2 must cite the completed proposal-1 result hash"
+  },
+  "comparison_limits": [
+    "One training seed and one campaign per method; no statistical superiority claim",
+    "Custom architectures are unrestricted within the interface and parameter cap; ordinary search explores only two predefined standard MLP widths",
+    "Equal training interactions and evaluation caps, not equal realized compute cost",
+    "Researcher also built the harness and can see baseline results; not blinded",
+    "No algorithm sweep or QR-DQN baseline yet; this isolates architecture within PPO",
+    "Budget is an initial screen, below upstream's recommended full PPO training",
+    "Gait quality is judged from replay, not inferred from speed alone",
+    "Before freezing this protocol, a custom-architecture engineering smoke test used 8192 training steps, 30000 evaluation steps and up to 5000 replay steps; these are disclosed separately and no smoke-test weights are reused"
+  ],
+  "protected_sources": {
+    "agents.py": "1c877c5c9d80dab03edf3df98a4e0851c9ac1c241fc7c95e93c951374df13a12",
+    "architectures.py": "e951105703eadf3853859c9073cfef096b71b2d983e6d0353bdc425c232adcd9",
+    "artifacts.py": "1c9b5c5416d76ba5d4040ea8ba019056af6e37f5f73d5efb09ab87def1d24431",
+    "browser.py": "3a2364c656bd56a479894d5f1bd2803bd5c05e3c3ef41803994144f8ee2185b9",
+    "budget.py": "1a270225920ad904b87a1cddb08ac2cb3bdcf2a24e652fe4c58c98bcea04602f",
+    "campaign.py": "d88b510255578e97dcd4e5d1f680c2bfd12eae447ea187e0679c483472ac102f",
+    "environment.py": "718036ec97e262d08a72a2ffa05317420f2752ff5a1fc05d3ebefa8252d10006",
+    "evaluation.py": "981ddd631a18572718872d97cfe6bf6a8c2c7c0478ef0ed215a6ceb4e705348e",
+    "replay.py": "4d7933e570e7368d7b667de89a5a5dec0168252bd4636de80bd2a77b025c0bc6",
+    "training.py": "7bd7b224fab03007f5f644778cbefe313d11feb9baa1efe84e9023db8904b1c1"
+  }
+}

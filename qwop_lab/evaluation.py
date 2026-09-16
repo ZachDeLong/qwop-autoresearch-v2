@@ -1,4 +1,4 @@
-"""Native completion metrics plus verifiable per-step trajectory artifacts."""
+"""Finish-line speed metrics plus verifiable per-step trajectory artifacts."""
 
 import statistics
 import time
@@ -7,8 +7,24 @@ from pathlib import Path
 import numpy as np
 
 from .agents import load_policy
-from .artifacts import digest, observation_hash, provenance, write_json
+from .artifacts import digest, observation_hash, provenance, read_json, sha256, write_json
 from .environment import case_dict, contract, make_env, reset_case, runtime
+
+SCORING = {
+    "id": "finish-line-v2",
+    "primary": "best_100m_game_seconds",
+    "direction": "minimize",
+    "valid_finish": "Recorded 100m crossing and native terminal success",
+    "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+    "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+    "reliability": "Report completion rate separately; no implicit 100% threshold",
+    "verification": "A record candidate requires successful deterministic trajectory replay",
+}
+
+
+def finish_seconds(episode):
+    crossing = episode["first_100m_score_time"]
+    return crossing / 10 if episode["is_success"] and crossing is not None else None
 
 
 def sample(obs, info, terminated=False, truncated=False, reward=None):
@@ -67,7 +83,15 @@ def summarize(episodes):
         raise ValueError("An evaluation must contain at least one episode")
     finished = [e for e in episodes if e["is_success"]]
     times = [e["score_time"] for e in finished]
+    crossing_times = [t for e in episodes if (t := finish_seconds(e)) is not None]
     return {
+        "scoring": SCORING,
+        "valid_100m_finishes": len(crossing_times),
+        "valid_100m_finish_rate": len(crossing_times) / len(episodes),
+        "best_100m_game_seconds": min(crossing_times) if crossing_times else None,
+        "mean_100m_game_seconds": statistics.mean(crossing_times) if crossing_times else None,
+        "median_100m_game_seconds": statistics.median(crossing_times) if crossing_times else None,
+        "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
         "episodes": len(episodes),
         "finishes": len(finished),
         "success_rate": len(finished) / len(episodes),
@@ -84,12 +108,47 @@ def summarize(episodes):
 
 
 def select_replay(episodes):
-    finished = [e for e in episodes if e["is_success"]]
+    finished = [e for e in episodes if finish_seconds(e) is not None]
     return (
-        min(finished, key=lambda e: e["score_time"])
+        min(finished, key=finish_seconds)
         if finished
         else max(episodes, key=lambda e: e["distance"])
     )
+
+
+def rescore(folder, output):
+    """Derive a new score from saved traces without overwriting original results."""
+    folder, output = Path(folder), Path(output)
+    if output.exists():
+        raise FileExistsError(output)
+    manifest = read_json(folder / "manifest.json")
+    if manifest["status"] != "complete":
+        raise ValueError("Only complete evaluations can be rescored")
+    episodes, inputs = [], {}
+    for case in manifest["cases"]:
+        path = folder / f"{case['id']}.json"
+        episode = read_json(path)
+        if episode["contract"] != manifest["contract"]:
+            raise ValueError("Episode and evaluation contracts differ")
+        if digest(episode["trace"]) != episode["trace_sha256"]:
+            raise ValueError("Recorded trace hash mismatch")
+        crossing = next((r["score_time"] for r in episode["trace"] if r["distance"] >= 100), None)
+        if crossing != episode["first_100m_score_time"]:
+            raise ValueError("Recorded crossing disagrees with trajectory")
+        episodes.append(episode)
+        inputs[path.name] = sha256(path)
+    result = {
+        "summary": summarize(episodes),
+        "model": manifest["model"],
+        "contract": manifest["contract"],
+        "source_manifest_sha256": sha256(folder / "manifest.json"),
+        "source_episode_hashes": inputs,
+        "selected_case": select_replay(episodes)["case"],
+        "provenance": provenance(),
+        "additional_environment_steps": 0,
+    }
+    write_json(output, result)
+    return result
 
 
 def evaluate(checkpoint, cases, out_dir, ledger, label):
@@ -97,7 +156,8 @@ def evaluate(checkpoint, cases, out_dir, ledger, label):
     out_dir.mkdir(parents=True, exist_ok=False)
     policy, model_id = load_policy(checkpoint)
     meta = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "scoring": SCORING,
         "label": label,
         "model": model_id,
         "contract": contract(runtime()),
@@ -115,9 +175,17 @@ def evaluate(checkpoint, cases, out_dir, ledger, label):
             episode = rollout(env, policy, case)
             episodes.append(episode)
             write_json(out_dir / f"{case.id}.json", {"contract": meta["contract"], **episode})
+            crossing = finish_seconds(episode)
+            crossing_label = (
+                f"{crossing:.3f}s to 100m" if crossing is not None else "no valid finish"
+            )
+            outcome = (
+                "finish"
+                if episode["is_success"]
+                else ("timeout" if episode["trace"][-1]["truncated"] else "fall")
+            )
             print(
-                f"{label} {case.id}: {'finish' if episode['is_success'] else 'fall'} "
-                f"{episode['distance']:.2f}m / {episode['score_time']:.2f}s",
+                f"{label} {case.id}: {outcome} {episode['distance']:.2f}m / {crossing_label}",
                 flush=True,
             )
         summary = summarize(episodes)

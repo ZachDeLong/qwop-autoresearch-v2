@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-09-16T00:04:26.077138+00:00",
+  "scope": "Post-study maintenance, outside the frozen experiment archive. No additional training or evaluation.",
+  "pytest": {
+    "passed": 34,
+    "failed": 0
+  },
+  "ruff_check": "passed",
+  "ruff_format_check": "passed",
+  "pip_check": "passed",
+  "git_diff_check": "passed",
+  "source_hashes": {
+    "qwop_lab/artifacts.py": "c7404925c261be738811c1dac117aae0c869cfe2cb46a48c18130752af0dfd27",
+    "qwop_lab/browser.py": "02fa65e191817a53b85fe0789572ca28abc9f5e1ee78d44daa7bd8244c893a5e",
+    "qwop_lab/environment.py": "9abe74ae11ed2dc730b50ff6f76901c14cca91069322705c884080756641607a",
+    "qwop_lab/replication.py": "0e42f1e9551267537e442183630736bc1b24660e8d40ee244856c62ae3e5c19d",
+    "qwop_lab/evaluation.py": "a9d3afda11f4a9c253b222ccd3ae6c1ec9f35712b9916ca4ec9d57d2e0e28e64",
+    "scripts/check_runtime.py": "4497b656141743b7ae34b885b9dc03b2b78c26e2417c3ac1796538b36de27568",
+    "scripts/read_replication_status.py": "23d3708e40ccf19e4d17be84045a214c5e48d7ccfce4fee25588cbad5c2eccd9",
+    "tests/test_atomic_writes.py": "4b956009a820d46054606b633584c0e1b2fcdcd6b743357ea4fd5431278242a9",
+    "tests/test_browser_lifecycle.py": "ffef5ddf3f020cc9a2979c61d1d477ab070dc3c25515baa9eb2ba53459af4fbd",
+    "tests/test_replication.py": "6dcd3e491991aa883f87b5b5564f72ddecba93e74aa19835a026cf46c758c1c0",
+    "README.md": "54e2f7afb7ec530fccabeb4179ece6effaac60eadd69bcb655a628bea620a4f4",
+    "RESEARCH_PLAN.md": "1f642483aa73a0dca80744871008b62025d8846964e60da5233ecddca6efaecf"
+  },
+  "lifecycle": {
+    "exit_code": 0,
+    "steps": {
+      "cap": 1,
+      "charged_steps": 0,
+      "confirmed_steps": 0,
+      "remaining_steps": 1,
+      "leases": [
+        {
+          "label": "startup-check",
+          "charged": 0,
+          "used": 0,
+          "closed": 1
+        }
+      ]
+    },
+    "process_check": {
+      "count": 0,
+      "remaining_processes": [],
+      "checked_utc": "2026-09-16T00:04:25.3266524Z"
+    },
+    "log_sha256": "14c3dd49e16c272a42dd14012817899463a772b4e8f528209e6c4863cb2a0868",
+    "note": "Closing Chrome causes the upstream websocket server to log no close frame received or sent. Startup/reset and cleanup succeeded, with zero remaining owned browser roots or drivers."
+  },
+  "frozen_archive_sha256_unchanged": "211868068604630f773472583fe528d9e0c64d17a0fcd0673f26d7be0e1f00c7",
+  "frozen_archive_file_count": 402
+}

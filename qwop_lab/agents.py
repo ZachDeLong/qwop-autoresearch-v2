@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from .artifacts import sha256
+from .artifacts import read_json, sha256
 
 
 def configure_torch(seed=1):
@@ -56,6 +56,20 @@ def load_policy(checkpoint):
     path = Path(checkpoint).resolve()
     if not path.is_file():
         raise FileNotFoundError(f"Required checkpoint missing: {path}")
+    sidecar = path.with_suffix(".json")
+    if path.suffix == ".zip" and sidecar.is_file():
+        metadata = read_json(sidecar)
+        if metadata["sha256"] != sha256(path):
+            raise ValueError("Checkpoint changed since its identity was recorded")
+        architecture = metadata["architecture"]
+        if architecture.get("extractor"):
+            from .architectures import Architecture
+
+            current = Architecture.from_dict(
+                {k: architecture[k] for k in ("layers", "activation", "extractor")}
+            ).identity()
+            if current["source_sha256"] != architecture["source_sha256"]:
+                raise ValueError("Custom architecture source changed since training")
     policy = SB3Policy(path) if path.suffix == ".zip" else LegacyPolicy(path)
     identity = {
         "path": str(path),

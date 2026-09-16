@@ -1,6 +1,7 @@
 """Versioned physics contract and reproducible episode starts."""
 
 import os
+import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -57,12 +58,47 @@ def contract(manifest):
     return {**value, "contract_id": digest(value)}
 
 
+class LabEnv(engine.QwopEnv):
+    def __init__(self, **kwargs):
+        try:
+            super().__init__(**kwargs)
+        except BaseException:
+            self.close()
+            raise
+
+    def close(self):
+        try:
+            if getattr(self, "client", None):
+                self.client.close()
+        finally:
+            if getattr(self, "shutdown", None):
+                self.shutdown.set()
+            proc = getattr(self, "proc", None)
+            if proc and proc.is_alive():
+                # Upstream terminates after two seconds, often interrupting
+                # ChromeDriver.quit() and leaking a complete browser session.
+                proc.join(timeout=15)
+                if proc.is_alive():
+                    if os.name == "nt":
+                        # This process belongs to this environment; include its
+                        # browser descendants if graceful shutdown gets stuck.
+                        subprocess.run(
+                            ["taskkill", "/PID", str(proc.pid), "/T", "/F"],
+                            capture_output=True,
+                            timeout=10,
+                            check=False,
+                        )
+                    else:
+                        proc.terminate()
+                    proc.join(timeout=5)
+
+
 def make_env(lease=None, time_cost_mult=10, success_reward=50):
     manifest = runtime()
     engine.WSServer = LabServer
     engine.WSClient = StrictClient
     os.environ["QWOP_LAB_BROWSER_VERSION"] = manifest["browser_version"]
-    env = engine.QwopEnv(
+    env = LabEnv(
         browser=manifest["files"]["browser"]["path"],
         driver=manifest["files"]["driver"]["path"],
         seed=1,

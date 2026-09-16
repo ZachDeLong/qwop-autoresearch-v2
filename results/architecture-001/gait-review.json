@@ -1,0 +1,17 @@
+{
+  "observer": "Codex visual inspection",
+  "video_sha256": {
+    "baseline": "03c8f60f3b686ccf27d38a717ad382d918b58c5deb8d5c736ca8e375e245a8eb",
+    "search": "ddb3684f081f4502e52de44e776ba19e180caee4d8b276d8bac138d712cb9fb7",
+    "research": "a9a06d50a7661eff89a0b0e55c7b25fcf57e2e58fb0956e80dcc94739b1870f1"
+  },
+  "contact_sheet_sha256": "98d0def5fe0509772491e96d49f35ebf9532bb68f0a0c8ac9a7d2c48ad1d3aef",
+  "sample_times_seconds": [
+    20,
+    60,
+    100
+  ],
+  "observation": "All three selected policies still show a knee-scooting gait: low pelvis, one knee repeatedly near the track, and the opposite leg extended forward. The faster benchmark times do not yet deliver convincing upright running.",
+  "method_limit": "Qualitative inspection of sampled frames from verified full-trajectory replays. This is not a formal gait classifier, contact-force measurement, or proof about every instant of motion.",
+  "upright_running_observed": false
+}

@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "initial_policy_identities": [
+    {
+      "design": "baseline",
+      "seed": 17,
+      "initial_state_sha256": "358ba94ac254458f51a227d6c9af7ffd2e95d9feed4167148a2d897103435511"
+    },
+    {
+      "design": "kinematic",
+      "seed": 17,
+      "initial_state_sha256": "dfe91a481b88b233c0844fa73b177e852a00df10fd7a4f1aa4e46fb407e9e823"
+    },
+    {
+      "design": "baseline",
+      "seed": 29,
+      "initial_state_sha256": "abfcc21caf88c8a712eda4c07432dd56c5726386952834ab06cc63ce994b3951"
+    },
+    {
+      "design": "kinematic",
+      "seed": 29,
+      "initial_state_sha256": "b7a2a12298ef47e05c0cf59e06dee2644fd6af162f875a5ac9069a5fd3f52b08"
+    },
+    {
+      "design": "baseline",
+      "seed": 61,
+      "initial_state_sha256": "e6e96b2e4015c76c33941e6041f66569f287019aa7b3828fd5dd704b45b88839"
+    },
+    {
+      "design": "kinematic",
+      "seed": 61,
+      "initial_state_sha256": "af698766648e2b9eb434c11900aeb6d4029c87df414f60ebb2d9004e91f205b0"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+BROWSER URL: file:///C:/Users/zachd/Documents/ChatGPT/QWOP/.venv/Lib/site-packages/qwop_gym/envs/v1/game/QWOP.html?port=58734&seed=1&game=1&stat=0&text=&intro=0&stepsize=4
+BROWSER ERRORS: []
+{"shape": [60], "info": {"time": 0.004033333156257868, "distance": 0.251109778881073, "avgspeed": 62.25862503051758, "is_success": false}}
+-- 4.62s [wsserver] ERROR: no close frame received or sent
+{"cap": 1, "charged_steps": 0, "confirmed_steps": 0, "remaining_steps": 1, "leases": [{"label": "startup-check", "charged": 0, "used": 0, "closed": 1}]}
