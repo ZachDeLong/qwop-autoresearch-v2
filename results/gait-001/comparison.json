@@ -1,0 +1,124 @@
+{
+  "protocol_sha256": "136779517f0cc69e445170bca5665ec6c46b4dce00a94112299d0fbf5222dbf0",
+  "arms": {
+    "baseline": {
+      "scoring": {
+        "id": "finish-line-v2",
+        "primary": "best_100m_game_seconds",
+        "direction": "minimize",
+        "valid_finish": "Recorded 100m crossing and native terminal success",
+        "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+        "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+        "reliability": "Report completion rate separately; no implicit 100% threshold",
+        "verification": "A record candidate requires successful deterministic trajectory replay"
+      },
+      "valid_100m_finishes": 2,
+      "valid_100m_finish_rate": 1.0,
+      "best_100m_game_seconds": 12.017006874084473,
+      "mean_100m_game_seconds": 12.037101745605469,
+      "median_100m_game_seconds": 12.037101745605469,
+      "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+      "episodes": 2,
+      "finishes": 2,
+      "success_rate": 1.0,
+      "mean_finish_score_time": 121.45435333251953,
+      "median_finish_score_time": 121.45435333251953,
+      "best_finish_score_time": 121.07007026672363,
+      "mean_distance": 100.92443084716797,
+      "total_steps": 1822,
+      "unique_initial_observations": 1,
+      "unique_action_sequences": 2,
+      "unique_trajectories": 2,
+      "interpretation": "Descriptive validation cases, not independent training replications",
+      "gait_by_case": {
+        "seed-101-soft-0": {
+          "steps": 914,
+          "mean_pelvis_height_m": 0.4060669534754341,
+          "mean_torso_tilt_degrees": 16.738684423938235,
+          "mean_posture_quality": 0.19534261231045408,
+          "mean_upright": 0.0087527352297593,
+          "mean_knee_near_ground": 0.9890590809628009,
+          "forward_distance_m": 100.84972792863846,
+          "upright_forward_distance_m": 0.16574648022651672,
+          "upright_forward_fraction": 0.0016434995277706589,
+          "native_return": 95.37638885437158,
+          "gait_adjustment_return": 0.0
+        },
+        "seed-101-soft-1": {
+          "steps": 908,
+          "mean_pelvis_height_m": 0.4063562231499511,
+          "mean_torso_tilt_degrees": 17.07971451303657,
+          "mean_posture_quality": 0.1962799306860605,
+          "mean_upright": 0.00881057268722467,
+          "mean_knee_near_ground": 0.9889867841409692,
+          "forward_distance_m": 100.49691420793533,
+          "upright_forward_distance_m": 0.16574648022651672,
+          "upright_forward_fraction": 0.001649269348545124,
+          "native_return": 95.27748398401594,
+          "gait_adjustment_return": 0.0
+        }
+      }
+    },
+    "gait": {
+      "scoring": {
+        "id": "finish-line-v2",
+        "primary": "best_100m_game_seconds",
+        "direction": "minimize",
+        "valid_finish": "Recorded 100m crossing and native terminal success",
+        "clock": "info.time = CORE.game.scoreTime / 10; unrounded game display seconds",
+        "crossing": "First observed torso distance >=100m; four-frame sampling, no interpolation",
+        "reliability": "Report completion rate separately; no implicit 100% threshold",
+        "verification": "A record candidate requires successful deterministic trajectory replay"
+      },
+      "valid_100m_finishes": 2,
+      "valid_100m_finish_rate": 1.0,
+      "best_100m_game_seconds": 14.723633766174316,
+      "mean_100m_game_seconds": 14.730600357055664,
+      "median_100m_game_seconds": 14.730600357055664,
+      "legacy_finish_time_units": "Native terminal info.time * 10; not game display seconds",
+      "episodes": 2,
+      "finishes": 2,
+      "success_rate": 1.0,
+      "mean_finish_score_time": 148.67266654968262,
+      "median_finish_score_time": 148.67266654968262,
+      "best_finish_score_time": 148.24233055114746,
+      "mean_distance": 101.22871398925781,
+      "total_steps": 2230,
+      "unique_initial_observations": 1,
+      "unique_action_sequences": 2,
+      "unique_trajectories": 2,
+      "interpretation": "Descriptive validation cases, not independent training replications",
+      "gait_by_case": {
+        "seed-101-soft-0": {
+          "steps": 1112,
+          "mean_pelvis_height_m": 0.4542346546049531,
+          "mean_torso_tilt_degrees": 21.62852286919388,
+          "mean_posture_quality": 0.3785570909407737,
+          "mean_upright": 0.03147482014388489,
+          "mean_knee_near_ground": 0.6312949640287769,
+          "forward_distance_m": 100.57971602678299,
+          "upright_forward_distance_m": 1.73371422290802,
+          "upright_forward_fraction": 0.01723721532924547,
+          "native_return": 88.5392015383422,
+          "gait_adjustment_return": 0.0
+        },
+        "seed-101-soft-1": {
+          "steps": 1118,
+          "mean_pelvis_height_m": 0.4544738205269405,
+          "mean_torso_tilt_degrees": 21.529384578639796,
+          "mean_posture_quality": 0.3796440704817403,
+          "mean_upright": 0.03130590339892665,
+          "mean_knee_near_ground": 0.6332737030411449,
+          "forward_distance_m": 101.3822825551033,
+          "upright_forward_distance_m": 1.73371422290802,
+          "upright_forward_fraction": 0.01710076138762916,
+          "native_return": 88.90608529891404,
+          "gait_adjustment_return": 0.0
+        }
+      }
+    }
+  },
+  "training_steps": 4194304,
+  "evaluation_and_replay_steps": 26882,
+  "limitations": "One paired training seed and two familiar reset phases. Descriptive reward screen; no statistical superiority, robustness, or convincing running claim without video review. This Mac runtime is distinct from the archived Windows studies."
+}

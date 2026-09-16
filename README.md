@@ -3,6 +3,15 @@
 A small restart of the QWOP experiment: reproducible evaluation, verified video replay,
 and a controlled PPO pilot. The aim is both better running and evidence we can trust.
 
+The latest [gait-reward screen](results/gait-001/report.md) trains a native-reward
+baseline and a posture-dependent reward for 2,097,152 steps each on paired seed 83.
+Both finish both reset phases. The gait reward reduces knee proximity from 98.9%
+to 63.2% and increases upright forward displacement from 0.165% to 1.717%, but takes
+22.38% longer to finish. Both reviewed sample sets still show knee-scooting. This
+reward remains an exploratory result, not an upright-running solution. The report
+includes a [verified comparison video](results/gait-001/comparison.mp4), raw-pose
+metrics, frozen source/models, and [all engineering costs](results/gait-engineering-001/report.md).
+
 The first architecture research campaign compared fresh PPO training, a fixed
 baseline, predefined architecture search, and two auditable AI proposals. See
 [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for budgets, methodology, commands, and limitations.
@@ -32,6 +41,51 @@ The control continues training with the original reward. This is a single-seed d
 pilot, not yet a test of whether an AI researcher beats ordinary search.
 
 ## Setup
+
+### macOS
+
+Use Python 3.12 and an installed Chrome. The Windows lock includes `torch+cpu`,
+which is not a macOS wheel; install the pinned project dependencies instead.
+Each new gait study records its resolved local dependencies and runtime hashes.
+
+```sh
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev,video]'
+.venv/bin/python -m qwop_lab.cli bootstrap --browser '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+.venv/bin/python -m pytest -q
+```
+
+Bootstrap reproduces the locked game's exact line endings on either platform.
+The game is served from a temporary loopback HTTP server bound to `127.0.0.1`;
+only the installed game directory is served, with directory listings disabled.
+The server and browser close with the environment. The optional video extra
+provides FFmpeg when it is not already on PATH.
+
+### Gait reward experiment
+
+```sh
+.venv/bin/python -m qwop_lab.gait_study init --out runs/gait-001
+.venv/bin/python -m qwop_lab.gait_study batch --out runs/gait-001
+.venv/bin/python -m qwop_lab.gait_study status --out runs/gait-001
+.venv/bin/python scripts/summarize_gait_training.py --out runs/gait-001
+.venv/bin/python -m qwop_lab.gait_study archive --out runs/gait-001 --destination results/gait-001
+```
+
+Defaults: two concurrent fresh 128x128 PPO policies, paired training seed 83,
+2,097,152 steps per arm, checkpoints every 524,288 steps, and two deterministic
+reset phases per checkpoint. Including evaluation and final verified replay,
+the total cap is **4,284,304 environment steps**. This is one exploratory seed
+pair, not a replicated result. See [GAIT_EXPERIMENT.md](GAIT_EXPERIMENT.md).
+
+The baseline keeps the native reward exactly. The treatment changes only its
+positive forward-speed component using measured pelvis height, torso tilt, and
+knee clearance. Both arms record identical gait diagnostics; evaluation always
+uses native reward. Raw unclipped body poses are saved, so the audit can recompute
+the measurements and replay can verify them as well as policy observations.
+
+For an engineering smoke test, initialize a separate output with `--steps 8192
+--interval 8192 --seed 84`. This is insufficient training for a behavioral claim.
+Existing output directories are never reused and failed training is not restarted.
 
 Windows reference setup: Python 3.12, Chrome, FFmpeg on PATH. An NVIDIA GPU is optional;
 the reference runtime uses CPU Torch and one Torch thread for the small MLPs.
@@ -111,8 +165,9 @@ that importing legacy actor/critic weights into SB3 preserves logits and value p
   unique even when physical behavior repeats; action-sequence counts expose that issue.
 - Replay: every body-state hash, distance, and termination flag must match. The native
   reset introduces a small wall-clock-derived timer offset even after a hard reset. We
-  subtract that single offset for clock verification and allow 5e-6 raw-time units for
-float32 rounding; all 60 normalized observation floats must match exactly. Video hashes and the
+  subtract that single offset for clock verification and allow the larger of 5e-6 raw-time
+units or the two float32 clocks' combined rounding bound (plus 1e-8 for reset rounding).
+All 60 normalized observation floats must match exactly. Video hashes and the
   offset are recorded in adjacent JSON. Any divergence aborts and removes the partial MP4.
 - Budget: workers reserve blocks of 256 steps transactionally before sending actions.
   Clean exits release unused reservations. A crashed worker can overcharge a block but

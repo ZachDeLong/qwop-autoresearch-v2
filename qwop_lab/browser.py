@@ -6,6 +6,13 @@ The WebSocket transport never resends an ambiguous action after a timeout.
 
 import os
 import time
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from threading import Thread
+from urllib.parse import urlsplit
+
+import qwop_gym
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -28,7 +35,37 @@ BROWSER_FLAGS = [
 ]
 
 
+class GameFiles(SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+    def list_directory(self, path):
+        self.send_error(403, "Directory listing disabled")
+        return None
+
+
 class LabServer(WSServer):
+    def build_url(self):
+        # A loopback server lets Chrome load the local game on macOS without
+        # requiring filesystem access to the user's Documents directory.
+        if getattr(self, "_http_server", None) is None:
+            game = Path(qwop_gym.__file__).parent / "envs/v1/game"
+            self._http_server = ThreadingHTTPServer(
+                ("127.0.0.1", 0), partial(GameFiles, directory=str(game))
+            )
+            self._http_thread = Thread(target=self._http_server.serve_forever, daemon=True)
+            self._http_thread.start()
+        query = urlsplit(super().build_url()).query
+        return f"http://127.0.0.1:{self._http_server.server_port}/QWOP.html?{query}"
+
+    def _close_http(self):
+        server = getattr(self, "_http_server", None)
+        if server is not None:
+            self._http_server = None
+            server.shutdown()
+            server.server_close()
+            self._http_thread.join(timeout=2)
+
     def cleanup_and_exit(self):
         # Close Chrome before awaiting the websocket server's shutdown. Waiting
         # for the browser websocket first can exceed the parent process timeout.
@@ -37,7 +74,10 @@ class LabServer(WSServer):
             if driver:
                 driver.quit()
         finally:
-            super().cleanup_and_exit()
+            try:
+                self._close_http()
+            finally:
+                super().cleanup_and_exit()
 
     def start(self, shutdown):
         try:
@@ -49,6 +89,7 @@ class LabServer(WSServer):
                     self._driver.quit()
                 except Exception:
                     pass
+            self._close_http()
 
     async def _launch_browser(self):
         options = webdriver.ChromeOptions()

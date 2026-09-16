@@ -1,0 +1,198 @@
+{
+  "runs": {
+    "gait-diagnostic-001": {
+      "description": "Browser startup failed on file:// access before any game steps.",
+      "ledgers": {
+        "budget.sqlite": {
+          "cap": 15000,
+          "charged_steps": 0,
+          "confirmed_steps": 0,
+          "remaining_steps": 15000,
+          "leases": []
+        }
+      },
+      "charged_steps": 0,
+      "confirmed_steps": 0
+    },
+    "gait-diagnostic-002": {
+      "description": "Historical speed-policy geometry check and verified replay.",
+      "ledgers": {
+        "budget.sqlite": {
+          "cap": 15000,
+          "charged_steps": 3000,
+          "confirmed_steps": 3000,
+          "remaining_steps": 12000,
+          "leases": [
+            {
+              "label": "historical gait diagnostic",
+              "charged": 1999,
+              "used": 1999,
+              "closed": 1
+            },
+            {
+              "label": "replay:Historical speed policy | gait diagnostic",
+              "charged": 1001,
+              "used": 1001,
+              "closed": 1
+            }
+          ]
+        }
+      },
+      "charged_steps": 3000,
+      "confirmed_steps": 3000
+    },
+    "gait-smoke-001": {
+      "description": "Training/evaluation succeeded; both long replays rejected by the old clock bound.",
+      "ledgers": {
+        "baseline/evaluation.sqlite": {
+          "cap": 15000,
+          "charged_steps": 14800,
+          "confirmed_steps": 14800,
+          "remaining_steps": 200,
+          "leases": [
+            {
+              "label": "baseline@8192",
+              "charged": 10000,
+              "used": 10000,
+              "closed": 1
+            },
+            {
+              "label": "replay:baseline | seed 84 | 8,192 steps",
+              "charged": 4800,
+              "used": 4800,
+              "closed": 1
+            }
+          ]
+        },
+        "baseline/training.sqlite": {
+          "cap": 8192,
+          "charged_steps": 8192,
+          "confirmed_steps": 8192,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 8192,
+              "used": 8192,
+              "closed": 1
+            }
+          ]
+        },
+        "gait/evaluation.sqlite": {
+          "cap": 15000,
+          "charged_steps": 14807,
+          "confirmed_steps": 14807,
+          "remaining_steps": 193,
+          "leases": [
+            {
+              "label": "gait@8192",
+              "charged": 10000,
+              "used": 10000,
+              "closed": 1
+            },
+            {
+              "label": "replay:gait | seed 84 | 8,192 steps",
+              "charged": 4807,
+              "used": 4807,
+              "closed": 1
+            }
+          ]
+        },
+        "gait/training.sqlite": {
+          "cap": 8192,
+          "charged_steps": 8192,
+          "confirmed_steps": 8192,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 8192,
+              "used": 8192,
+              "closed": 1
+            }
+          ]
+        }
+      },
+      "charged_steps": 45991,
+      "confirmed_steps": 45991
+    },
+    "gait-smoke-002": {
+      "description": "Complete smoke pair, including full timeout replays and independent artifact audit.",
+      "ledgers": {
+        "baseline/evaluation.sqlite": {
+          "cap": 15000,
+          "charged_steps": 15000,
+          "confirmed_steps": 15000,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "baseline@8192",
+              "charged": 10000,
+              "used": 10000,
+              "closed": 1
+            },
+            {
+              "label": "replay:baseline | seed 84 | 8,192 steps",
+              "charged": 5000,
+              "used": 5000,
+              "closed": 1
+            }
+          ]
+        },
+        "baseline/training.sqlite": {
+          "cap": 8192,
+          "charged_steps": 8192,
+          "confirmed_steps": 8192,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 8192,
+              "used": 8192,
+              "closed": 1
+            }
+          ]
+        },
+        "gait/evaluation.sqlite": {
+          "cap": 15000,
+          "charged_steps": 15000,
+          "confirmed_steps": 15000,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "gait@8192",
+              "charged": 10000,
+              "used": 10000,
+              "closed": 1
+            },
+            {
+              "label": "replay:gait | seed 84 | 8,192 steps",
+              "charged": 5000,
+              "used": 5000,
+              "closed": 1
+            }
+          ]
+        },
+        "gait/training.sqlite": {
+          "cap": 8192,
+          "charged_steps": 8192,
+          "confirmed_steps": 8192,
+          "remaining_steps": 0,
+          "leases": [
+            {
+              "label": "train:training",
+              "charged": 8192,
+              "used": 8192,
+              "closed": 1
+            }
+          ]
+        }
+      },
+      "charged_steps": 46384,
+      "confirmed_steps": 46384
+    }
+  },
+  "total_charged_steps": 95375,
+  "included_in_main_study_budget": false,
+  "weights_reused_in_main_study": false
+}

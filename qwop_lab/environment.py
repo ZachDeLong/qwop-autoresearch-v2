@@ -25,6 +25,7 @@ PROTOCOL = {
     "reset": "hard reset(seed), followed by case.soft_resets soft resets",
     "inference": "deterministic argmax",
     "browser_flags": BROWSER_FLAGS,
+    "game_transport": "loopback-http-v1",
 }
 
 
@@ -59,6 +60,11 @@ def contract(manifest):
 
 
 class LabEnv(engine.QwopEnv):
+    def _build_reaction(self, data):
+        reaction = super()._build_reaction(data)
+        self.raw_observation = reaction.data
+        return reaction
+
     def __init__(self, **kwargs):
         try:
             super().__init__(**kwargs)

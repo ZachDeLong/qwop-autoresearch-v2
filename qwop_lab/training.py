@@ -108,6 +108,8 @@ class Recorder(BaseCallback):
                     "score_time": float(info["time"]) * 10,
                     "is_success": bool(info["is_success"]),
                 }
+                if "gait_episode" in info:
+                    row["gait"] = info["gait_episode"]
                 with self.path.open("a", encoding="utf-8") as f:
                     f.write(json.dumps(row) + "\n")
         if self.num_timesteps % 8192 == 0:
@@ -144,6 +146,7 @@ def train(
     checkpoint_interval=None,
     max_parameters=250000,
     max_seconds=None,
+    gait_config=None,
 ):
     architecture = architecture or Architecture()
     config = dict(PPO_CONFIG if config is None else config)
@@ -187,7 +190,14 @@ def train(
     env = model = None
     start = time.perf_counter()
     try:
-        env = Monitor(make_env(lease, time_cost_mult=time_cost, success_reward=50))
+        env = make_env(lease, time_cost_mult=time_cost, success_reward=50)
+        if gait_config is not None:
+            from .gait import GaitWrapper
+
+            meta["gait_config"] = gait_config.identity()
+            write_json(out_dir / "manifest.json", meta)
+            env = GaitWrapper(env, gait_config)
+        env = Monitor(env)
         model = PPO(
             "MlpPolicy",
             env,

@@ -1,0 +1,123 @@
+{
+  "id": "gait-screen-v1",
+  "created_utc": "2026-09-16T03:40:51.494016+00:00",
+  "training_steps_per_arm": 2097152,
+  "checkpoint_interval": 524288,
+  "seed": 83,
+  "arms": {
+    "baseline": {
+      "id": "gait-v1",
+      "coefficient": 0.0,
+      "pelvis_low_m": 0.3,
+      "pelvis_target_m": 0.65,
+      "knee_clearance_m": 0.12,
+      "max_tilt_degrees": 45.0
+    },
+    "gait": {
+      "id": "gait-v1",
+      "coefficient": 1.0,
+      "pelvis_low_m": 0.3,
+      "pelvis_target_m": 0.65,
+      "knee_clearance_m": 0.12,
+      "max_tilt_degrees": 45.0
+    }
+  },
+  "ppo_config": {
+    "n_steps": 2048,
+    "batch_size": 128,
+    "n_epochs": 6,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "ent_coef": 0.01,
+    "vf_coef": 0.5,
+    "max_grad_norm": 0.5,
+    "device": "cpu",
+    "verbose": 0
+  },
+  "architecture": "Separate 128x128 Tanh actor and critic; fresh paired initialization",
+  "native_reward": {
+    "time_cost_mult": 10,
+    "success_reward": 50
+  },
+  "reward_change": "Multiply only positive native speed reward by 0.1 + 1.9 * posture_quality. Posture quality is the product of clipped hip-height, knee-clearance, and torso-tilt scores. Native time/failure/completion terms are preserved; no standing bonus.",
+  "measurements": "Raw body origins/angles reconstruct hip and knee anchors. Y points down; ten world units per displayed metre. Clearance is a proximity proxy, not contact sensing. Upright forward distance sums positive torso displacement on qualifying sampled states; it is not net race progress and does not establish alternating running.",
+  "evaluation_cases": [
+    {
+      "seed": 101,
+      "soft_resets": 0
+    },
+    {
+      "seed": 101,
+      "soft_resets": 1
+    }
+  ],
+  "evaluation_gait_config": {
+    "id": "gait-v1",
+    "coefficient": 0.0,
+    "pelvis_low_m": 0.3,
+    "pelvis_target_m": 0.65,
+    "knee_clearance_m": 0.12,
+    "max_tilt_degrees": 45.0
+  },
+  "evaluation_cap_per_arm": 45000,
+  "training_wall_seconds_per_arm": 7200,
+  "selection": "Report both final policies; intermediate checkpoints are diagnostic only",
+  "hypothesis": "Forward-motion-gated posture reward increases upright movement and reduces knee proximity at the same training budget; completion and distance expose any regression.",
+  "limitations": "One paired training seed and two familiar reset phases. Descriptive reward screen; no statistical superiority, robustness, or convincing running claim without video review. This Mac runtime is distinct from the archived Windows studies.",
+  "failure_policy": "Preserve failures and charges. No automatic training retry, continuation, budget expansion, or reuse of existing output directories.",
+  "contract": {
+    "id": "qwop-lab-v1",
+    "frames_per_step": 4,
+    "max_episode_steps": 5000,
+    "observation": "qwop-gym-1.0.1-normalized-60-float32",
+    "actions": "qwop-gym-1.0.1-full-16-enumerated-key-combinations",
+    "completion": "qwop-gym native is_success at terminal; includes 105m fallback",
+    "score_time": "info.time * 10; raw info.time retained separately",
+    "first_100m": "first observed distance >=100; sampled every four physics frames",
+    "reset": "hard reset(seed), followed by case.soft_resets soft resets",
+    "inference": "deterministic argmax",
+    "browser_flags": [
+      "--headless=new",
+      "--allow-file-access-from-files",
+      "--disable-extensions",
+      "--disable-notifications",
+      "--disable-popup-blocking",
+      "--window-size=800,650",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--enable-unsafe-swiftshader",
+      "--incognito"
+    ],
+    "game_transport": "loopback-http-v1",
+    "runtime_id": "59241ab39c71d6ffc293a6e1934910bdf9072e02339598523633f65e9ade852b",
+    "contract_id": "22e081d54e9ae60d55f35441dc81d28b4446b0d9255de313e121f441642ed0a7"
+  },
+  "protected_sources": {
+    "qwop_lab/__init__.py": "c7237f32dd83f3023c4579256597e12e953d72c052ebb6f5535f9b3ae1730573",
+    "qwop_lab/agents.py": "1c877c5c9d80dab03edf3df98a4e0851c9ac1c241fc7c95e93c951374df13a12",
+    "qwop_lab/architectures.py": "e951105703eadf3853859c9073cfef096b71b2d983e6d0353bdc425c232adcd9",
+    "qwop_lab/artifacts.py": "c7404925c261be738811c1dac117aae0c869cfe2cb46a48c18130752af0dfd27",
+    "qwop_lab/bootstrap.py": "636c5d0bf2ffbf04c3f7909887ac54df9cb08454adb920f8b80eb0bb63b59265",
+    "qwop_lab/browser.py": "2134e374d8c61beea98c5871fa682f36ab378f13481f9f3178e3ace8080d6320",
+    "qwop_lab/budget.py": "1a270225920ad904b87a1cddb08ac2cb3bdcf2a24e652fe4c58c98bcea04602f",
+    "qwop_lab/campaign.py": "d88b510255578e97dcd4e5d1f680c2bfd12eae447ea187e0679c483472ac102f",
+    "qwop_lab/campaign_recovery.py": "d01682e0816db3510f41089c561407067c3b45fad17eb64833dfcaceec95ce8a",
+    "qwop_lab/campaign_status.py": "2e6ba2faac390726f5c113f884ecbaa456478da26ea62ed7363c4d1b2b1d5b3f",
+    "qwop_lab/candidates/__init__.py": "c43dd3e281cba289f7689fc2c4177fb612285b49901f9ce816ff0a2023462347",
+    "qwop_lab/candidates/body_grouped_v1.py": "1d3c1b1f5ed1c47c45d5fefbd7eeba11e61f8b2bdaa0037daf9342791a40537f",
+    "qwop_lab/candidates/kinematic_v2.py": "8c9f8b6c17aec5a5866ea9483e45d4fb13e4dba40e623652ce56fbab38167bd2",
+    "qwop_lab/cli.py": "6bbd2e32a2f72cc0d219a6e55184260f4bfd381a466c6bf4efb67edcbb01c57a",
+    "qwop_lab/environment.py": "d5daeb463ea3a9c4b0b3ab5624de21b671fd81755c506bc5a66384fb12973a68",
+    "qwop_lab/evaluation.py": "6018d7500ee91c7ca2800ea3a3dc9a913af5ca0ea209000e61dc3d31ee5aa359",
+    "qwop_lab/gait.py": "109bcb60f92a3c179c30edc4bb34f79187a93efd889207c75b1936c87f6af2ba",
+    "qwop_lab/gait_study.py": "f535b258389c8e9c93b524826190ab474794481cfe1b7c5c296cbfe800242f6d",
+    "qwop_lab/pilot.py": "2d2c2a319339256e0f0f119cddebdfce1362a6e07d8b2148d7649177066e3aff",
+    "qwop_lab/replay.py": "28c29c7ac9e1b73d13a97dd8f0b98a128f7236ae690b6dcc229b9795d21164dd",
+    "qwop_lab/replication.py": "0e42f1e9551267537e442183630736bc1b24660e8d40ee244856c62ae3e5c19d",
+    "qwop_lab/replication_resume.py": "5ba3219059081a64c23b38faa93242db01f6dd1c45e2a60da6eee974da5907b0",
+    "qwop_lab/training.py": "71f99df917c5f1a4e883954302ea6dd8f3d27a15a86180ae3471d5a5be7af7a4"
+  },
+  "prior_report_sha256": "eae88b078e6fbbc8cb0cd997edb3ac898db50d11982571783d840defddb46f00"
+}

@@ -39,6 +39,7 @@ def sample(obs, info, terminated=False, truncated=False, reward=None):
         "truncated": bool(truncated),
         "is_success": bool(info["is_success"]),
         "reward": None if reward is None else float(reward),
+        **({"gait_pose": info["gait_pose"], "gait": info["gait"]} if "gait" in info else {}),
     }
 
 
@@ -75,6 +76,7 @@ def rollout(env, policy, case):
         "score_time": final["score_time"],
         "first_100m_score_time": first_100m,
         "wall_seconds_including_reset": time.perf_counter() - start,
+        **({"gait_summary": info["gait_episode"]} if "gait_episode" in info else {}),
     }
 
 
@@ -151,7 +153,7 @@ def rescore(folder, output):
     return result
 
 
-def evaluate(checkpoint, cases, out_dir, ledger, label):
+def evaluate(checkpoint, cases, out_dir, ledger, label, *, gait_config=None):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=False)
     policy, model_id = load_policy(checkpoint)
@@ -171,8 +173,18 @@ def evaluate(checkpoint, cases, out_dir, ledger, label):
     env = None
     try:
         env = make_env(lease)
+        if gait_config is not None:
+            from .gait import GaitWrapper
+
+            if gait_config.coefficient != 0:
+                raise ValueError("Evaluation must use native reward (coefficient zero)")
+            env = GaitWrapper(env, gait_config)
+            meta["gait_config"] = gait_config.identity()
+            write_json(out_dir / "manifest.json", meta)
         for case in cases:
             episode = rollout(env, policy, case)
+            if gait_config is not None:
+                episode["gait_config"] = gait_config.identity()
             episodes.append(episode)
             write_json(out_dir / f"{case.id}.json", {"contract": meta["contract"], **episode})
             crossing = finish_seconds(episode)
@@ -189,6 +201,8 @@ def evaluate(checkpoint, cases, out_dir, ledger, label):
                 flush=True,
             )
         summary = summarize(episodes)
+        if gait_config is not None:
+            summary["gait_by_case"] = {e["case"]["id"]: e["gait_summary"] for e in episodes}
         write_json(out_dir / "summary.json", summary)
         best = select_replay(episodes)
         write_json(out_dir / "selected-replay.json", {"contract": meta["contract"], **best})

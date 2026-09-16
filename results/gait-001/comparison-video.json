@@ -1,0 +1,10 @@
+{
+  "file": "comparison.mp4",
+  "sha256": "4cda8f04805f2e50a2777551bfa5f721e63c4ffe1c850be8374944331e88b0ae",
+  "source": "Side-by-side composition of the two verified final phase-zero replays. The shorter run holds its last frame while the other finishes.",
+  "case": "seed-101-soft-0",
+  "training_seed": 83,
+  "baseline_verified_transitions": 914,
+  "gait_verified_transitions": 1112,
+  "source_replay_metadata_in_archive": ["baseline/replay.json", "gait/replay.json"]
+}

@@ -1,0 +1,16 @@
+{
+  "training_seed": 83,
+  "reviewed_case": "seed-101-soft-0",
+  "method": "Visual inspection of six predetermined frames at 20%, 50%, and 80% of both fully verified final replays; post-hoc analysis of contiguous upright samples in the saved phase-zero traces.",
+  "summary": "Both sampled final policies retain knee-scooting: low pelvis, a folded leg near the track, and the opposite leg extended forward. The gait reward changes geometric proxies but the reviewed samples do not show convincing upright running.",
+  "reviewed_frames": 6,
+  "mean_100m_time_change_percent": 22.376637403048825,
+  "baseline_mean_upright_forward_fraction": 0.0016463844381578913,
+  "gait_mean_upright_forward_fraction": 0.017168988358437318,
+  "baseline_phase_zero_upright_only_at_startup": true,
+  "gait_phase_zero_longest_poststartup_upright_streak_samples": 4,
+  "streak_analysis_post_hoc": true,
+  "formal_running_classifier": false,
+  "decision": "Do not promote this reward as an upright-running solution. Retain both models and all intermediate outcomes.",
+  "limits": "One paired training seed, two familiar reset phases, geometric knee proximity rather than contact measurements, and sampled visual review rather than a claim about every instant."
+}

@@ -14,6 +14,29 @@ from .environment import Case, contract, make_env, reset_case, runtime
 from .evaluation import sample
 
 
+def ffmpeg_binary():
+    path = shutil.which("ffmpeg")
+    if path:
+        return path
+    try:
+        import imageio_ffmpeg
+
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError as exc:
+        raise RuntimeError("Install FFmpeg or the project's [video] extra") from exc
+
+
+def clock_tolerance(actual_time, expected_time):
+    # Each independently rounded float32 clock contributes at most half an ULP.
+    # Above 64 seconds, one ULP exceeds the historical 5-microsecond floor.
+    # The tiny extra term covers the separately rounded initial reset offset.
+    rounding = (
+        abs(float(np.spacing(np.float32(actual_time))))
+        + abs(float(np.spacing(np.float32(expected_time))))
+    ) / 2
+    return max(5e-6, rounding + 1e-8)
+
+
 def verify_sample(actual, expected, index, time_offset=0.0):
     # Rendering must not change any recorded physical transition.
     for key in ("obs_sha256", "distance", "terminated", "truncated", "is_success"):
@@ -22,8 +45,14 @@ def verify_sample(actual, expected, index, time_offset=0.0):
                 f"Replay diverged at step {index}: {key} "
                 f"expected {expected[key]}, got {actual[key]}"
             )
+    for key in ("gait_pose", "gait"):
+        if key in expected and actual.get(key) != expected[key]:
+            raise ValueError(f"Replay diverged at step {index}: {key}")
     if not math.isclose(
-        actual["raw_time"] - expected["raw_time"], time_offset, rel_tol=0, abs_tol=5e-6
+        actual["raw_time"] - expected["raw_time"],
+        time_offset,
+        rel_tol=0,
+        abs_tol=clock_tolerance(actual["raw_time"], expected["raw_time"]),
     ):
         raise ValueError(f"Replay diverged at step {index}: raw_time after reset-offset correction")
 
@@ -36,8 +65,9 @@ def frame_repeats(previous_time, current_time, fps=30):
 
 def annotated(rgb, label, state):
     im = Image.fromarray(rgb)
-    canvas = Image.new("RGB", (im.width, im.height + 64), (18, 23, 32))
-    canvas.paste(im, (0, 64))
+    header = 90 if "gait" in state else 64
+    canvas = Image.new("RGB", (im.width, im.height + header), (18, 23, 32))
+    canvas.paste(im, (0, header))
     draw = ImageDraw.Draw(canvas)
     try:
         font = ImageFont.truetype("C:/Windows/Fonts/segoeui.ttf", 19)
@@ -55,6 +85,16 @@ def annotated(rgb, label, state):
         font=font,
         fill=(135, 217, 190),
     )
+    if "gait" in state:
+        gait = state["gait"]
+        knee = min(gait["left_knee_clearance_m"], gait["right_knee_clearance_m"])
+        draw.text(
+            (12, 60),
+            f"Hip {gait['pelvis_height_m']:.2f}m  Knee {knee:.2f}m  "
+            f"Tilt {gait['torso_tilt_degrees']:.0f}deg  Upright {gait['upright']}",
+            font=font,
+            fill=(200, 210, 230),
+        )
     return np.asarray(canvas)
 
 
@@ -69,8 +109,7 @@ def replay(replay_file, output, ledger, label="Verified replay"):
         raise ValueError("Replay artifact hash mismatch")
     if len(data["actions"]) != len(data["trace"]) or not data["actions"]:
         raise ValueError("Invalid replay action/trace lengths")
-    if not shutil.which("ffmpeg"):
-        raise RuntimeError("FFmpeg must be installed and on PATH")
+    encoder = ffmpeg_binary()
     output = Path(output)
     if output.exists():
         raise FileExistsError(output)
@@ -80,8 +119,14 @@ def replay(replay_file, output, ledger, label="Verified replay"):
     lease = ledger.lease(f"replay:{label}")
     env = process = None
     frames = 0
+    gait_samples = []
+    max_clock_tolerance = 5e-6
     try:
         env = make_env(lease)
+        if "gait_config" in data:
+            from .gait import GaitConfig, GaitWrapper
+
+            env = GaitWrapper(env, GaitConfig.from_dict(data["gait_config"]))
         obs, info = reset_case(env, case)
         state = sample(obs, info)
         time_offset = state["raw_time"] - data["initial"]["raw_time"]
@@ -90,7 +135,7 @@ def replay(replay_file, output, ledger, label="Verified replay"):
         height, width, _ = rgb.shape
         process = subprocess.Popen(
             [
-                "ffmpeg",
+                encoder,
                 "-hide_banner",
                 "-loglevel",
                 "error",
@@ -127,11 +172,18 @@ def replay(replay_file, output, ledger, label="Verified replay"):
             obs, reward, terminated, truncated, info = env.step(action)
             actual = sample(obs, info, terminated, truncated, reward)
             verify_sample(actual, expected, index, time_offset)
+            max_clock_tolerance = max(
+                max_clock_tolerance, clock_tolerance(actual["raw_time"], expected["raw_time"])
+            )
             count = frame_repeats(state["score_time"], actual["score_time"])
             process.stdin.write(rgb.tobytes() * count)
             frames += count
             state = actual
             rgb = annotated(env.render(), label, state)
+            if "gait_config" in data:
+                for fraction in (0.2, 0.5, 0.8):
+                    if index == max(1, round(len(data["actions"]) * fraction)):
+                        gait_samples.append((fraction, index, rgb.copy()))
         # One final state frame, followed by a clearly documented 1-second hold.
         process.stdin.write(rgb.tobytes() * 30)
         frames += 30
@@ -140,6 +192,13 @@ def replay(replay_file, output, ledger, label="Verified replay"):
         if process.wait(timeout=30) != 0:
             raise RuntimeError(f"FFmpeg failed: {error}")
         os.replace(partial, output)
+        sample_meta = []
+        for fraction, step, pixels in gait_samples:
+            path = output.with_name(f"{output.stem}.sample-{round(fraction * 100)}.png")
+            Image.fromarray(pixels).save(path)
+            sample_meta.append(
+                {"fraction": fraction, "step": step, "file": path.name, "sha256": sha256(path)}
+            )
         meta = {
             "verified": True,
             "verified_transitions": len(data["actions"]),
@@ -151,11 +210,13 @@ def replay(replay_file, output, ledger, label="Verified replay"):
             "final_hold_seconds": 1,
             "initial_score_time": data["initial"]["score_time"],
             "reset_raw_time_offset": time_offset,
-            "elapsed_raw_time_tolerance": 5e-6,
+            "elapsed_raw_time_tolerance": max_clock_tolerance,
+            "clock_tolerance_rule": "max(5e-6, half ULP(actual) + half ULP(expected) + 1e-8); float32 clocks",
             "final_score_time": state["score_time"],
             "overlay_clock": "raw info.time, game display scale; video uses simulation time",
             "case": data["case"],
             "contract_id": data["contract"]["contract_id"],
+            **({"gait_samples": sample_meta} if sample_meta else {}),
         }
         write_json(output.with_suffix(".json"), meta)
         Image.fromarray(rgb).save(output.with_suffix(".png"))
@@ -185,7 +246,7 @@ def side_by_side(left, right, output):
     duration = max(m["duration_seconds"] for m in metas)
     subprocess.run(
         [
-            "ffmpeg",
+            ffmpeg_binary(),
             "-hide_banner",
             "-loglevel",
             "error",

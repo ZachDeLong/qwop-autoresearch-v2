@@ -16,6 +16,21 @@ from .browser import BROWSER_FLAGS
 SOURCE_URL = "https://www.foddy.net/legacy/QWOP.min.js"
 
 
+def match_locked_newlines(path, expected):
+    """Reproduce a locked text artifact across platforms without relaxing its hash."""
+    path = Path(path)
+    if sha256(path) == expected:
+        return
+    import hashlib
+
+    lf = path.read_bytes().replace(b"\r\n", b"\n")
+    for candidate in (lf, lf.replace(b"\n", b"\r\n")):
+        if hashlib.sha256(candidate).hexdigest() == expected:
+            path.write_bytes(candidate)
+            return
+    raise RuntimeError("Patched game differs from the committed lock; inspect before upgrading")
+
+
 def bootstrap(browser=None):
     folder = ROOT / ".runtime"
     folder.mkdir(exist_ok=True)
@@ -29,6 +44,9 @@ def bootstrap(browser=None):
     if lockfile.exists() and read_json(lockfile)["source_sha256"] != source_hash:
         raise RuntimeError("Game source differs from the committed lock; inspect before upgrading")
     patch(str(source))
+    game_dir = Path(qwop_gym.__file__).parent / "envs" / "v1" / "game"
+    if lockfile.exists():
+        match_locked_newlines(game_dir / "QWOP.min.js", read_json(lockfile)["patched_sha256"])
     arguments = ["--browser", "chrome"]
     if browser:
         arguments += ["--browser-path", str(Path(browser).resolve())]
@@ -40,13 +58,15 @@ def bootstrap(browser=None):
         options.add_argument(flag)
     with webdriver.Chrome(service=Service(driver_path), options=options) as probe:
         version = probe.capabilities["browserVersion"]
-    game_dir = Path(qwop_gym.__file__).parent / "envs" / "v1" / "game"
     files = {
         "browser": browser_path,
         "driver": driver_path,
         "game": game_dir / "QWOP.min.js",
         "extension": game_dir / "extensions.js",
         "websocket_js": game_dir / "ws.js",
+        "asset_bundle": game_dir / "assets" / "assetbundle.parcel",
+        "game_html": game_dir / "QWOP.html",
+        "seedrandom_js": game_dir / "seedrandom.js",
     }
     entries = {
         key: {"path": str(Path(value).resolve()), "sha256": sha256(value)}

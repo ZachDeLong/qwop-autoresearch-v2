@@ -55,6 +55,29 @@ def test_shutdown_closes_browser_before_waiting_for_websockets(monkeypatch):
     assert server._driver is None
 
 
+def test_loopback_game_server_serves_assets_and_closes(monkeypatch):
+    from urllib.request import urlopen
+    from urllib.error import HTTPError
+
+    server = object.__new__(browser.LabServer)
+    monkeypatch.setattr(
+        browser.WSServer, "build_url", lambda self: "file:///game/QWOP.html?seed=42"
+    )
+    try:
+        url = server.build_url()
+        assert url.startswith("http://127.0.0.1:") and url.endswith("?seed=42")
+        with urlopen(url, timeout=2) as response:
+            assert response.status == 200
+            assert b"extensions.js" in response.read()
+        with pytest.raises(HTTPError) as error:
+            urlopen(url.split("/QWOP.html")[0] + "/assets/", timeout=2)
+        assert error.value.code == 403
+    finally:
+        server._close_http()
+    assert not server._http_thread.is_alive()
+    server._close_http()
+
+
 @pytest.mark.skipif(environment.os.name != "nt", reason="Windows process-tree fallback")
 def test_shutdown_timeout_targets_only_owned_process_tree(monkeypatch):
     env = object.__new__(environment.LabEnv)
